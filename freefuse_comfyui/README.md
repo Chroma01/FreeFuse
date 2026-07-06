@@ -106,12 +106,26 @@ bash freefuse_comfyui/scripts/setup_krea2_cuda_test.sh
 
 The setup script expects the two character LoRAs in `LORA_SOURCE_DIR` unless `KIM_LORA_FILE` and `VIOLET_LORA_FILE` are set explicitly.
 
+To stage the local character LoRAs before copying them to a CUDA host:
+
+```bash
+WORK_DIR=/tmp/freefuse-krea2 \
+bash freefuse_comfyui/scripts/pack_krea2_loras.sh
+```
+
 Run the 8-GPU seed matrix after setup:
 
 ```bash
 WORK_DIR=/tmp/freefuse-krea2 \
 OUTPUT_DIR=/tmp/freefuse-krea2/results/krea2_matrix \
 bash freefuse_comfyui/scripts/run_krea2_cuda_matrix.sh
+```
+
+After choosing the best `krea2_baseline_vs_freefuse.png`, copy it back and update the top-level README:
+
+```bash
+python3 freefuse_comfyui/scripts/update_krea2_readme_result.py \
+  --contact-sheet /path/to/krea2_baseline_vs_freefuse.png
 ```
 
 ## Preview Image

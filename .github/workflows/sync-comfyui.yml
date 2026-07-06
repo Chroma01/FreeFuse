@@ -26,6 +26,8 @@ jobs:
         run: |
           python3 -m json.tool freefuse_comfyui/workflows/krea2_freefuse_with_editor.json >/dev/null
           PYTHONDONTWRITEBYTECODE=1 python3 freefuse_comfyui/tests/test_krea2_static.py
+          PYTHONPYCACHEPREFIX=/tmp/freefuse-pycache python3 -m py_compile freefuse_comfyui/scripts/update_krea2_readme_result.py
+          bash -n freefuse_comfyui/scripts/pack_krea2_loras.sh
           bash -n freefuse_comfyui/scripts/setup_krea2_cuda_test.sh
           bash -n freefuse_comfyui/scripts/run_krea2_cuda_matrix.sh
 
