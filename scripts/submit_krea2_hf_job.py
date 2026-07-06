@@ -44,6 +44,7 @@ def read_args() -> argparse.Namespace:
     parser.add_argument("--work-dir", default="/tmp/freefuse-krea2")
     parser.add_argument("--upload-assets", action="store_true")
     parser.add_argument("--submit-job", action="store_true")
+    parser.add_argument("--confirm-paid-gpu", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -83,6 +84,11 @@ def main() -> None:
     print(f"[krea2-hf] flavor: {args.flavor}, timeout: {args.timeout}", flush=True)
     if dry_run:
         print("[krea2-hf] dry-run mode; no upload or GPU job will be started", flush=True)
+    if args.submit_job and not args.confirm_paid_gpu:
+        raise SystemExit(
+            "--submit-job starts a paid Hugging Face GPU job. "
+            "Re-run with --confirm-paid-gpu after confirming the cost and asset upload policy."
+        )
 
     if args.upload_assets:
         if not args.lora_bundle.exists():
