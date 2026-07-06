@@ -83,8 +83,9 @@ class FreeFuseAttentionBias:
                               "- double_stream_only: Only double-stream blocks (Flux/Flux2)\n"
                               "- single_stream_only: Only single-stream blocks (Flux/Flux2)\n"
                               "- last_half_double: Last half of double blocks\n"
-                              "- last_half: Last half of layers (Z-Image)\n"
-                              "- none: Disable attention bias"
+                              "- last_half: Last half of layers (Z-Image/Krea2)\n"
+                              "- none: Disable attention bias\n"
+                              "Note: For Krea2, use 'all' or 'last_half'; Flux stream-specific options are rejected."
                 }),
             }
         }
@@ -230,6 +231,30 @@ Parameters:
                 lora_masks=lora_masks_flat,
                 token_pos_maps=token_pos_maps,
             )
+        elif model_type == "krea2":
+            from ..freefuse_core.krea2_support import apply_krea2_bias_patches
+
+            lora_masks_flat = {}
+            for name, mask in mask_dict.items():
+                if name.startswith("_"):
+                    continue
+                if mask.dim() == 3:
+                    mask = mask[0]
+                mask_flat = mask.reshape(-1)
+                lora_masks_flat[name] = mask_flat.unsqueeze(0)
+
+            krea2_block_indices = self._resolve_krea2_bias_blocks(model_clone, bias_blocks)
+
+            # Note: unlike Flux/Z-Image, this installs via model_options["model_function_wrapper"]
+            # (hooks are installed/removed on every single forward call) rather than persistent
+            # hooks - see krea2_support.apply_krea2_bias_patches for why.
+            apply_krea2_bias_patches(
+                model_clone,
+                lora_masks=lora_masks_flat,
+                token_pos_maps=token_pos_maps,
+                config=config,
+                block_indices=krea2_block_indices,
+            )
         else:  # SDXL
             # SDXL uses per-layer bias computation
             apply_attention_bias_patches(
@@ -285,6 +310,27 @@ Parameters:
                 max_pos = max(positions_list[0])
                 txt_seq_len = max(txt_seq_len, max_pos + 10)
         return txt_seq_len
+
+    def _resolve_krea2_bias_blocks(self, model_clone, bias_blocks: str) -> List[int]:
+        """
+        Map Krea2-compatible bias_blocks values to concrete block indices.
+        Krea2 is single-stream (comfy.ldm.krea2.model.SingleStreamDiT), so
+        Flux-specific stream options are rejected instead of remapped.
+        """
+        diffusion_model = model_clone.model.diffusion_model
+        blocks = getattr(diffusion_model, "blocks", None)
+        if blocks is None:
+            raise RuntimeError("[FreeFuse Krea2] Cannot resolve bias blocks: diffusion model has no `blocks`")
+        n = len(blocks)
+
+        if bias_blocks == "all":
+            return list(range(n))
+        if bias_blocks == "last_half":
+            return list(range(n // 2, n))
+        raise ValueError(
+            f"[FreeFuse Krea2] bias_blocks='{bias_blocks}' is not valid for Krea2. "
+            "Use 'all', 'last_half', or 'none'."
+        )
 
 
 class FreeFuseAttentionBiasVisualize:

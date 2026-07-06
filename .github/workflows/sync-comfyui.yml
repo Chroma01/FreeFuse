@@ -22,6 +22,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate ComfyUI subtree
+        run: |
+          python3 -m json.tool freefuse_comfyui/workflows/krea2_freefuse_with_editor.json >/dev/null
+          PYTHONDONTWRITEBYTECODE=1 python3 freefuse_comfyui/tests/test_krea2_static.py
+          bash -n freefuse_comfyui/scripts/setup_krea2_cuda_test.sh
+          bash -n freefuse_comfyui/scripts/run_krea2_cuda_matrix.sh
+
       - name: Split subtree and force-push comfyui
         run: |
           git config user.name "github-actions[bot]"
