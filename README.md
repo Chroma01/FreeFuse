@@ -9,6 +9,7 @@ FreeFuse for ComfyUI: multi-concept LoRA composition with spatial awareness.
 - [workflows/flux2_klein_9b_freefuse_complete.json](workflows/flux2_klein_9b_freefuse_complete.json)
 - [workflows/sdxl_freefuse_complete.json](workflows/sdxl_freefuse_complete.json)
 - [workflows/zimage_freefuse_complete.json](workflows/zimage_freefuse_complete.json)
+- [workflows/krea2_freefuse_with_editor.json](workflows/krea2_freefuse_with_editor.json)
 
 ## Installation
 
@@ -32,6 +33,8 @@ ln -s /path/to/FreeFuse/comfyui ComfyUI/custom_nodes
 > - Flux2.Klein 9B: flux-2-klein-9b-fp8.safetensors + qwen_3_8b_fp8mixed.safetensors + flux2-vae.safetensors
 > - SDXL: harry_potter_xl.safetensors, daiyu_lin_xl.safetensors
 > - Z-Image-Turbo: Jinx_Arcane_zit.safetensors, skeletor_zit.safetensors
+> - Krea2 Turbo: krea2_turbo_fp8_scaled.safetensors + qwen3vl_4b_fp8_scaled.safetensors + qwen_image_vae.safetensors
+> - Krea2 example LoRAs: FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors, FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors
 > If you use the downloads above, rename the files or update the workflow nodes.
 
 **Prompt**
@@ -63,8 +66,8 @@ Example:
 
 - `steps`: Total steps for Phase 2 (keep consistent for the same noise schedule)
 - `collect_step`: Which step to collect attention and early-stop
-- `collect_block`: Transformer block/layer to extract attention (Flux: `transformer_blocks.<idx>`, Flux2: `single_transformer_blocks.<idx>`, Z-Image: `layers.<idx>`, SDXL ignored)
-- `collect_block_end`: Optional inclusive end index for range-mode collection (Flux/Flux2/Z-Image). Set `collect_block_end > collect_block` to enable majority-vote aggregation across blocks.
+- `collect_block`: Transformer block/layer to extract attention (Flux: `transformer_blocks.<idx>`, Flux2: `single_transformer_blocks.<idx>`, Z-Image: `layers.<idx>`, Krea2: `blocks.<idx>`, SDXL ignored)
+- `collect_block_end`: Optional inclusive end index for range-mode collection (Flux/Flux2/Z-Image/Krea2). Set `collect_block_end > collect_block` to enable majority-vote aggregation across blocks.
 - `temperature`: Softmax temperature for similarity; 0 = auto (Flux/Flux2=4000, SDXL=300)
 - `top_k_ratio`: Ratio of top-k tokens used for similarity
 - `disable_lora_phase1`: Disable LoRA in Phase 1 (recommended for cleaner attention)
@@ -86,7 +89,30 @@ Example:
 
 - Flux uses FluxGuidance for CFG; set KSampler CFG to 1.0
 - Flux2.Klein uses CLIPTextEncode + CLIPLoader(type=`flux2`); keep KSampler CFG at 1.0 as a safe default
+- Krea2 uses CLIPTextEncode + CLIPLoader(type=`krea2`); the included comparison runner follows the official Krea2 Turbo 8-step KSampler setup
 - SDXL uses KSampler CFG directly (recommended 7.0)
+
+## Krea2 CUDA Comparison Test
+
+Krea2 fp8 weights should be tested on a CUDA host. On macOS, ComfyUI auto device selection uses Apple MPS, which cannot run the fp8 Krea2 tensors; use `--device cpu` only for a tiny local compatibility smoke test.
+
+Prepare ComfyUI, the venv, and the official Krea2 model files under `/tmp`:
+
+```bash
+WORK_DIR=/tmp/freefuse-krea2 \
+LORA_SOURCE_DIR=/tmp/freefuse-krea2/input_loras \
+bash freefuse_comfyui/scripts/setup_krea2_cuda_test.sh
+```
+
+The setup script expects the two character LoRAs in `LORA_SOURCE_DIR` unless `KIM_LORA_FILE` and `VIOLET_LORA_FILE` are set explicitly.
+
+Run the 8-GPU seed matrix after setup:
+
+```bash
+WORK_DIR=/tmp/freefuse-krea2 \
+OUTPUT_DIR=/tmp/freefuse-krea2/results/krea2_matrix \
+bash freefuse_comfyui/scripts/run_krea2_cuda_matrix.sh
+```
 
 ## Preview Image
 
