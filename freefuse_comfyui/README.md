@@ -143,6 +143,12 @@ UPDATE_README=0 \
 bash freefuse_comfyui/scripts/import_krea2_cuda_results.sh
 ```
 
+If no company CUDA host is reachable, prepare a Hugging Face Jobs run without launching it:
+
+```bash
+python3 freefuse_comfyui/scripts/submit_krea2_hf_job.py --dry-run
+```
+
 ## Preview Image
 
 The workflows include a preview image:
