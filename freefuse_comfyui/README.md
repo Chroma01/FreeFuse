@@ -33,7 +33,7 @@ ln -s /path/to/FreeFuse/comfyui ComfyUI/custom_nodes
 > - Flux2.Klein 9B: flux-2-klein-9b-fp8.safetensors + qwen_3_8b_fp8mixed.safetensors + flux2-vae.safetensors
 > - SDXL: harry_potter_xl.safetensors, daiyu_lin_xl.safetensors
 > - Z-Image-Turbo: Jinx_Arcane_zit.safetensors, skeletor_zit.safetensors
-> - Krea2 Turbo: krea2_turbo_fp8_scaled.safetensors + qwen3vl_4b_fp8_scaled.safetensors + qwen_image_vae.safetensors
+> - Krea2 Turbo: krea2_turbo_fp8_scaled.safetensors + qwen3vl_4b_fp8_scaled.safetensors + qwen_image_vae.safetensors, or the larger bf16 pair krea2_turbo_bf16.safetensors + qwen3vl_4b_bf16.safetensors for Apple MPS testing
 > - Krea2 example LoRAs: FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors, FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors
 > If you use the downloads above, rename the files or update the workflow nodes.
 
@@ -92,11 +92,11 @@ Example:
 - Krea2 uses CLIPTextEncode + CLIPLoader(type=`krea2`); the included comparison runner follows the official Krea2 Turbo 8-step KSampler setup
 - SDXL uses KSampler CFG directly (recommended 7.0)
 
-## Krea2 CUDA Comparison Test
+## Krea2 Comparison Tests
 
-Krea2 fp8 weights should be tested on a CUDA host. On macOS, ComfyUI auto device selection uses Apple MPS, which cannot run the fp8 Krea2 tensors; use `--device cpu` only for a tiny local compatibility smoke test.
+Krea2 fp8 weights should be tested on a CUDA host. On macOS, ComfyUI auto device selection uses Apple MPS, which cannot run the fp8 Krea2 tensors. Comfy-Org also publishes bf16 Krea2 files, which avoid that fp8 dtype failure on MPS, but they are much larger: `krea2_turbo_bf16.safetensors` is about 26.3 GB and `qwen3vl_4b_bf16.safetensors` is about 8.88 GB before runtime memory.
 
-Prepare ComfyUI, the venv, and the official Krea2 model files under `/tmp`:
+Prepare ComfyUI, the venv, and the default fp8 Krea2 model files under `/tmp` for CUDA testing:
 
 ```bash
 WORK_DIR=/tmp/freefuse-krea2 \
@@ -105,6 +105,32 @@ bash freefuse_comfyui/scripts/setup_krea2_cuda_test.sh
 ```
 
 The setup script expects the two character LoRAs in `LORA_SOURCE_DIR` unless `KIM_LORA_FILE` and `VIOLET_LORA_FILE` are set explicitly.
+
+For an explicit Mac/MPS bf16 smoke route, use bf16 weights and disable the setup-time CUDA requirement:
+
+```bash
+WORK_DIR=/tmp/freefuse-krea2 \
+KREA2_PRECISION=bf16 \
+KREA2_DEVICE=mps \
+REQUIRE_CUDA=0 \
+LORA_SOURCE_DIR=/tmp/freefuse-krea2/input_loras \
+bash freefuse_comfyui/scripts/setup_krea2_cuda_test.sh
+```
+
+Then run a smaller local comparison first. If this fails due to memory pressure, treat it as an MPS capacity limit rather than a FreeFuse algorithm failure:
+
+```bash
+/tmp/freefuse-krea2/.venv/bin/python freefuse_comfyui/scripts/run_krea2_compare.py \
+  --comfyui-dir /tmp/freefuse-krea2/ComfyUI \
+  --plugin-dir freefuse_comfyui \
+  --device mps \
+  --unet-name krea2_turbo_bf16.safetensors \
+  --clip-name qwen3vl_4b_bf16.safetensors \
+  --kim-lora-file "/tmp/freefuse-krea2/input_loras/Krea 2 - Kim Possible.safetensors" \
+  --violet-lora-file "/tmp/freefuse-krea2/input_loras/Krea 2 - Violet Parr.safetensors" \
+  --output-dir /tmp/freefuse-krea2/results/krea2_mps_bf16 \
+  --mode both --width 512 --height 512 --steps 8 --phase1-steps 8 --collect-step 3
+```
 
 To stage the local character LoRAs before copying them to a CUDA host:
 

@@ -24,6 +24,27 @@ KIM_LORA_FILE="${KIM_LORA_FILE:-${LORA_SOURCE_DIR}/Krea 2 - Kim Possible.safeten
 VIOLET_LORA_FILE="${VIOLET_LORA_FILE:-${LORA_SOURCE_DIR}/Krea 2 - Violet Parr.safetensors}"
 COMFYUI_REF="${COMFYUI_REF:-master}"
 KREA2_REPO="${KREA2_REPO:-Comfy-Org/Krea-2}"
+KREA2_PRECISION="${KREA2_PRECISION:-fp8}"
+KREA2_DEVICE="${KREA2_DEVICE:-auto}"
+REQUIRE_CUDA="${REQUIRE_CUDA:-1}"
+
+case "${KREA2_PRECISION}" in
+  fp8)
+    DEFAULT_KREA2_UNET_NAME="krea2_turbo_fp8_scaled.safetensors"
+    DEFAULT_KREA2_CLIP_NAME="qwen3vl_4b_fp8_scaled.safetensors"
+    ;;
+  bf16)
+    DEFAULT_KREA2_UNET_NAME="krea2_turbo_bf16.safetensors"
+    DEFAULT_KREA2_CLIP_NAME="qwen3vl_4b_bf16.safetensors"
+    ;;
+  *)
+    printf '[krea2-setup] unsupported KREA2_PRECISION: %s (expected fp8 or bf16)\n' "${KREA2_PRECISION}" >&2
+    exit 1
+    ;;
+esac
+
+KREA2_UNET_NAME="${KREA2_UNET_NAME:-${DEFAULT_KREA2_UNET_NAME}}"
+KREA2_CLIP_NAME="${KREA2_CLIP_NAME:-${DEFAULT_KREA2_CLIP_NAME}}"
 
 export HF_HOME="${HF_HOME:-${WORK_DIR}/hf_home}"
 export HF_HUB_CACHE="${HF_HUB_CACHE:-${WORK_DIR}/hf_hub_cache}"
@@ -32,7 +53,9 @@ export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
 
 require_cmd git
 require_cmd python3
-require_cmd nvidia-smi
+if [[ "${REQUIRE_CUDA}" == "1" ]]; then
+  require_cmd nvidia-smi
+fi
 
 mkdir -p "${WORK_DIR}" "${HF_HOME}" "${HF_HUB_CACHE}" "${HF_XET_CACHE}" "${LORA_SOURCE_DIR}"
 
@@ -64,13 +87,19 @@ log "installing Python dependencies"
 "${PYTHON}" -m pip install -U pip wheel
 "${PYTHON}" -m pip install -r "${COMFYUI_DIR}/requirements.txt"
 "${PYTHON}" -m pip install -U "huggingface_hub[hf_xet]" hf_xet psutil pillow
-"${PYTHON}" - <<'PY'
+REQUIRE_CUDA="${REQUIRE_CUDA}" "${PYTHON}" - <<'PY'
+import os
 import sys
 import torch
 
-if not torch.cuda.is_available():
+require_cuda = os.environ.get("REQUIRE_CUDA", "1") == "1"
+if require_cuda and not torch.cuda.is_available():
     raise SystemExit("CUDA is not available in the test venv")
-print(f"[krea2-setup] torch={torch.__version__}, cuda_devices={torch.cuda.device_count()}")
+print(
+    f"[krea2-setup] torch={torch.__version__}, "
+    f"cuda_devices={torch.cuda.device_count()}, "
+    f"mps_available={getattr(torch.backends, 'mps', None) is not None and torch.backends.mps.is_available()}"
+)
 PY
 
 download_model_file() {
@@ -84,8 +113,8 @@ download_model_file() {
   "${HF}" download "${KREA2_REPO}" "${repo_path}" --local-dir "${COMFYUI_DIR}/models"
 }
 
-download_model_file "diffusion_models/krea2_turbo_fp8_scaled.safetensors"
-download_model_file "text_encoders/qwen3vl_4b_fp8_scaled.safetensors"
+download_model_file "diffusion_models/${KREA2_UNET_NAME}"
+download_model_file "text_encoders/${KREA2_CLIP_NAME}"
 download_model_file "vae/qwen_image_vae.safetensors"
 
 if [[ ! -f "${KIM_LORA_FILE}" || ! -f "${VIOLET_LORA_FILE}" ]]; then
@@ -121,11 +150,17 @@ log "LoRA files found"
 log "ComfyUI: ${COMFYUI_DIR}"
 log "venv: ${VENV_DIR}"
 log "HF cache: ${HF_HUB_CACHE}"
+log "Krea2 precision: ${KREA2_PRECISION}"
+log "Krea2 diffusion model: ${KREA2_UNET_NAME}"
+log "Krea2 text encoder: ${KREA2_CLIP_NAME}"
 log "ready; run:"
 cat <<EOF
 ${VENV_DIR}/bin/python ${FREEFUSE_REPO}/freefuse_comfyui/scripts/run_krea2_compare.py \\
   --comfyui-dir ${COMFYUI_DIR} \\
   --plugin-dir ${FREEFUSE_REPO}/freefuse_comfyui \\
+  --device ${KREA2_DEVICE} \\
+  --unet-name "${KREA2_UNET_NAME}" \\
+  --clip-name "${KREA2_CLIP_NAME}" \\
   --kim-lora-file "${KIM_LORA_FILE}" \\
   --violet-lora-file "${VIOLET_LORA_FILE}" \\
   --output-dir ${WORK_DIR}/results/krea2_compare \\
