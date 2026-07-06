@@ -121,6 +121,13 @@ OUTPUT_DIR=/tmp/freefuse-krea2/results/krea2_matrix \
 bash freefuse_comfyui/scripts/run_krea2_cuda_matrix.sh
 ```
 
+Or run the full remote flow from the LoRA tar in one command:
+
+```bash
+WORK_DIR=/tmp/freefuse-krea2 \
+bash freefuse_comfyui/scripts/run_krea2_remote_full_test.sh
+```
+
 After choosing the best `krea2_baseline_vs_freefuse.png`, copy it back and update the top-level README:
 
 ```bash
