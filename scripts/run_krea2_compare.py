@@ -53,7 +53,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--plugin-dir", type=Path, default=plugin_dir)
     parser.add_argument("--output-dir", type=Path, default=Path("output") / "FreeFuse" / "Krea2_compare")
     parser.add_argument("--mode", choices=("baseline", "freefuse", "both"), default="both")
-    parser.add_argument("--device", choices=("auto", "cpu"), default="auto")
+    parser.add_argument("--device", choices=("auto", "cpu", "mps"), default="auto")
     parser.add_argument("--width", type=int, default=512)
     parser.add_argument("--height", type=int, default=512)
     parser.add_argument("--steps", type=int, default=8)
@@ -133,12 +133,25 @@ def ensure_test_layout(args: argparse.Namespace) -> None:
 
 def validate_device_model_pair(args: argparse.Namespace) -> None:
     fp8_names = [name for name in (args.unet_name, args.clip_name) if "fp8" in name.lower()]
+    if args.device == "mps":
+        if platform.system() != "Darwin":
+            raise RuntimeError("--device mps is only available on macOS with Apple Silicon.")
+        import torch
+
+        if not torch.backends.mps.is_available():
+            raise RuntimeError("--device mps was requested, but torch.backends.mps is not available.")
+        if fp8_names:
+            raise RuntimeError(
+                "Apple MPS does not support the fp8 Krea2 weights used here "
+                f"({', '.join(fp8_names)}). Use the Comfy-Org bf16 files instead: "
+                "krea2_turbo_bf16.safetensors and qwen3vl_4b_bf16.safetensors."
+            )
     if args.device == "auto" and platform.system() == "Darwin" and fp8_names:
         raise RuntimeError(
             "ComfyUI auto device selection on macOS uses Apple MPS, which does not support "
             "the fp8 Krea2 weights used here "
             f"({', '.join(fp8_names)}). Use --device cpu for a local compatibility smoke test "
-            "or run the formal image comparison on a CUDA GPU host."
+            "or use the Comfy-Org bf16 files for an explicit --device mps smoke test."
         )
 
 

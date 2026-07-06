@@ -32,6 +32,9 @@ POSITIVE_BIAS_SCALE="${POSITIVE_BIAS_SCALE:-2.0}"
 LORA_STRENGTH="${LORA_STRENGTH:-0.85}"
 MAX_RSS_GB="${MAX_RSS_GB:-96}"
 MAX_MEMORY_PERCENT="${MAX_MEMORY_PERCENT:-95}"
+KREA2_UNET_NAME="${KREA2_UNET_NAME:-krea2_turbo_fp8_scaled.safetensors}"
+KREA2_CLIP_NAME="${KREA2_CLIP_NAME:-qwen3vl_4b_fp8_scaled.safetensors}"
+KREA2_DEVICE="${KREA2_DEVICE:-auto}"
 
 if ! command -v nvidia-smi >/dev/null 2>&1; then
   printf '[krea2-matrix] nvidia-smi is required for CUDA matrix testing\n' >&2
@@ -83,6 +86,9 @@ run_one_seed() {
     --violet-lora-file "${VIOLET_LORA_FILE}" \
     --output-dir "${seed_dir}" \
     --mode both \
+    --device "${KREA2_DEVICE}" \
+    --unet-name "${KREA2_UNET_NAME}" \
+    --clip-name "${KREA2_CLIP_NAME}" \
     --width "${WIDTH}" \
     --height "${HEIGHT}" \
     --steps "${STEPS}" \
