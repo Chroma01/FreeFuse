@@ -135,6 +135,14 @@ python3 freefuse_comfyui/scripts/update_krea2_readme_result.py \
   --contact-sheet /path/to/krea2_baseline_vs_freefuse.png
 ```
 
+If you copied back the full remote result bundle, import it and then select the best seed explicitly:
+
+```bash
+RESULT_BUNDLE=/tmp/freefuse-krea2/krea2_cuda_results.tar.gz \
+UPDATE_README=0 \
+bash freefuse_comfyui/scripts/import_krea2_cuda_results.sh
+```
+
 ## Preview Image
 
 The workflows include a preview image:

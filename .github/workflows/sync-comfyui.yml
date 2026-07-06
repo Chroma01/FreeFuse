@@ -31,6 +31,7 @@ jobs:
           bash -n freefuse_comfyui/scripts/setup_krea2_cuda_test.sh
           bash -n freefuse_comfyui/scripts/run_krea2_cuda_matrix.sh
           bash -n freefuse_comfyui/scripts/run_krea2_remote_full_test.sh
+          bash -n freefuse_comfyui/scripts/import_krea2_cuda_results.sh
 
       - name: Split subtree and force-push comfyui
         run: |
