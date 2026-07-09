@@ -297,7 +297,7 @@
       },
       "widgets_values": [
         "",
-        "On the left stands kimpossible, Kim Possible, a teenage cartoon girl with long red-orange hair, green eyes, wearing a fitted green cropped shirt and black pants. On the right stands violetparr, Violet Parr, a superhero girl with short black hair with purple highlights, purple eyes, wearing a red and black superhero bodysuit and black gloves. They are standing on a cinematic city rooftop at sunset with glass buildings in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping.",
+        "On the left stands archer-queen, Archer Queen, a stylized fantasy queen archer with long purple hair and straight bangs, a gold crown, green tunic dress, purple cloak, gold shoulder armor and bracers, carrying a wooden crossbow and a quiver of red arrows. On the right stands satoru gojo, white hair, black blindfold, Satoru Gojo, an anime sorcerer with spiky white hair, a glossy black blindfold, pale skin, a confident smile, and a high-collared black jacket, making a two-finger peace sign. They are standing in a cinematic fantasy castle hall with banners and torchlight in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping.",
         ""
       ]
     },
@@ -355,7 +355,7 @@
         "Node name for S&R": "FreeFuseTokenPositions"
       },
       "widgets_values": [
-        "On the left stands kimpossible, Kim Possible, a teenage cartoon girl with long red-orange hair, green eyes, wearing a fitted green cropped shirt and black pants. On the right stands violetparr, Violet Parr, a superhero girl with short black hair with purple highlights, purple eyes, wearing a red and black superhero bodysuit and black gloves. They are standing on a cinematic city rooftop at sunset with glass buildings in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping.",
+        "On the left stands archer-queen, Archer Queen, a stylized fantasy queen archer with long purple hair and straight bangs, a gold crown, green tunic dress, purple cloak, gold shoulder armor and bracers, carrying a wooden crossbow and a quiver of red arrows. On the right stands satoru gojo, white hair, black blindfold, Satoru Gojo, an anime sorcerer with spiky white hair, a glossy black blindfold, pale skin, a confident smile, and a high-collared black jacket, making a two-finger peace sign. They are standing in a cinematic fantasy castle hall with banners and torchlight in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping.",
         true,
         true
       ]
@@ -505,7 +505,7 @@
         "text": ""
       },
       "widgets_values": [
-        "# FreeFuse Krea2 - Model & LoRA Guide\n\nRequired model files for ComfyUI:\n\ntext_encoders/qwen3vl_4b_fp8_scaled.safetensors\nhttps://huggingface.co/Comfy-Org/Krea-2/resolve/main/text_encoders/qwen3vl_4b_fp8_scaled.safetensors\n\ndiffusion_models/krea2_turbo_fp8_scaled.safetensors\nhttps://huggingface.co/Comfy-Org/Krea-2/resolve/main/diffusion_models/krea2_turbo_fp8_scaled.safetensors\n\nvae/qwen_image_vae.safetensors\nhttps://huggingface.co/Comfy-Org/Krea-2/resolve/main/vae/qwen_image_vae.safetensors\n\nloras/FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors\nloras/FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors\n\nKrea2 uses its own fixed Qwen3-VL chat template inside the text encoder. Do not manually prepend the old Z-Image/Lumina system prompt."
+        "# FreeFuse Krea2 - Model & LoRA Guide\n\nRequired model files for ComfyUI:\n\ntext_encoders/qwen3vl_4b_fp8_scaled.safetensors\nhttps://huggingface.co/Comfy-Org/Krea-2/resolve/main/text_encoders/qwen3vl_4b_fp8_scaled.safetensors\n\ndiffusion_models/krea2_turbo_fp8_scaled.safetensors\nhttps://huggingface.co/Comfy-Org/Krea-2/resolve/main/diffusion_models/krea2_turbo_fp8_scaled.safetensors\n\nvae/qwen_image_vae.safetensors\nhttps://huggingface.co/Comfy-Org/Krea-2/resolve/main/vae/qwen_image_vae.safetensors\n\nloras/archer_queen_krea2.safetensors\nloras/satoru_gojo_krea2.safetensors\n\nKrea2 uses its own fixed Qwen3-VL chat template inside the text encoder. Do not manually prepend the old Z-Image/Lumina system prompt."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -533,7 +533,7 @@
         "text": ""
       },
       "widgets_values": [
-        "# FreeFuse Krea2 - Test Workflow\n\nThis workflow is a two-subject identity-isolation test for Kim Possible and Violet Parr.\n\nRecommended local smoke settings on Apple Silicon:\n- 512x512 or lower first, batch=1\n- steps=4 for smoke, 8-12 for final comparison\n- sampler/scheduler: euler/simple or er_sde/simple depending on local ComfyUI support\n- collect_block / collect_block_end: 10 / 10 initially\n- attention bias blocks: all for the final comparison\n\nFinal README images should compare the same seed/prompt with FreeFuse disabled versus enabled."
+        "# FreeFuse Krea2 - Test Workflow\n\nThis workflow is a two-subject identity-isolation test for Archer Queen and Satoru Gojo.\n\nRecommended local smoke settings on Apple Silicon:\n- 512x512 or lower first, batch=1\n- steps=4 for smoke, 8-12 for final comparison\n- sampler/scheduler: euler/simple or er_sde/simple depending on local ComfyUI support\n- collect_block / collect_block_end: 10 / 10 initially\n- attention bias blocks: all for the final comparison\n\nFinal README images should compare the same seed/prompt with FreeFuse disabled versus enabled."
       ],
       "color": "#224",
       "bgcolor": "#335"
@@ -641,15 +641,15 @@
           ]
         }
       ],
-      "title": "LoRA 1: Kim Possible",
+      "title": "LoRA 1: Archer Queen",
       "properties": {
         "cnr_id": "freefuse",
         "ver": "1.0.13",
         "Node name for S&R": "FreeFuseLoRALoader"
       },
       "widgets_values": [
-        "FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors",
-        "kimpossible",
+        "archer_queen_krea2.safetensors",
+        "archer-queen",
         0.85,
         0.85
       ]
@@ -714,15 +714,15 @@
           ]
         }
       ],
-      "title": "LoRA 2: Violet Parr",
+      "title": "LoRA 2: Satoru Gojo",
       "properties": {
         "cnr_id": "freefuse",
         "ver": "1.0.13",
         "Node name for S&R": "FreeFuseLoRALoader"
       },
       "widgets_values": [
-        "FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors",
-        "violetparr",
+        "satoru_gojo_krea2.safetensors",
+        "satoru-gojo",
         0.85,
         0.85
       ]
@@ -774,7 +774,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "On the left stands kimpossible, Kim Possible, a teenage cartoon girl with long red-orange hair, green eyes, wearing a fitted green cropped shirt and black pants. On the right stands violetparr, Violet Parr, a superhero girl with short black hair with purple highlights, purple eyes, wearing a red and black superhero bodysuit and black gloves. They are standing on a cinematic city rooftop at sunset with glass buildings in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping."
+        "On the left stands archer-queen, Archer Queen, a stylized fantasy queen archer with long purple hair and straight bangs, a gold crown, green tunic dress, purple cloak, gold shoulder armor and bracers, carrying a wooden crossbow and a quiver of red arrows. On the right stands satoru gojo, white hair, black blindfold, Satoru Gojo, an anime sorcerer with spiky white hair, a glossy black blindfold, pale skin, a confident smile, and a high-collared black jacket, making a two-finger peace sign. They are standing in a cinematic fantasy castle hall with banners and torchlight in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping."
       ]
     },
     {
@@ -1126,9 +1126,9 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        354347915735006,
+        8,
         "fixed",
-        4,
+        12,
         1,
         "er_sde",
         "simple",
@@ -1174,16 +1174,16 @@
         "Node name for S&R": "FreeFuseConceptMap"
       },
       "widgets_values": [
-        "kimpossible",
-        "kimpossible, Kim Possible, a teenage cartoon girl with long red-orange hair, green eyes, wearing a fitted green cropped shirt and black pants",
-        "violetparr",
-        "violetparr, Violet Parr, a superhero girl with short black hair with purple highlights, purple eyes, wearing a red and black superhero bodysuit and black gloves",
+        "archer-queen",
+        "archer-queen, Archer Queen, a stylized fantasy queen archer with long purple hair and straight bangs, a gold crown, green tunic dress, purple cloak, gold shoulder armor and bracers, carrying a wooden crossbow and a quiver of red arrows",
+        "satoru-gojo",
+        "satoru gojo, white hair, black blindfold, Satoru Gojo, an anime sorcerer with spiky white hair, a glossy black blindfold, pale skin, a confident smile, and a high-collared black jacket, making a two-finger peace sign",
         "",
         "",
         "",
         "",
         true,
-        "a cinematic city rooftop at sunset with glass buildings in the background"
+        "a cinematic fantasy castle hall with banners and torchlight in the background"
       ]
     },
     {
@@ -1220,7 +1220,7 @@
         "Run widget replace on values": false
       },
       "widgets_values": [
-        "On the left stands kimpossible, Kim Possible, a teenage cartoon girl with long red-orange hair, green eyes, wearing a fitted green cropped shirt and black pants. On the right stands violetparr, Violet Parr, a superhero girl with short black hair with purple highlights, purple eyes, wearing a red and black superhero bodysuit and black gloves. They are standing on a cinematic city rooftop at sunset with glass buildings in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping."
+        "On the left stands archer-queen, Archer Queen, a stylized fantasy queen archer with long purple hair and straight bangs, a gold crown, green tunic dress, purple cloak, gold shoulder armor and bracers, carrying a wooden crossbow and a quiver of red arrows. On the right stands satoru gojo, white hair, black blindfold, Satoru Gojo, an anime sorcerer with spiky white hair, a glossy black blindfold, pale skin, a confident smile, and a high-collared black jacket, making a two-finger peace sign. They are standing in a cinematic fantasy castle hall with banners and torchlight in the background, full body, two clearly separated characters, clean composition, no merged faces, no costume swapping."
       ]
     },
     {
@@ -1365,7 +1365,7 @@
         "Node name for S&R": "SaveImage"
       },
       "widgets_values": [
-        "FreeFuse/Krea2_kim_violet"
+        "FreeFuse/Krea2_archer_gojo"
       ]
     }
   ],
@@ -1799,8 +1799,8 @@
       ]
     },
     "info": {
-      "name": "FreeFuse Krea2 Kim Violet Workflow",
-      "description": "Two-phase FreeFuse workflow for Krea2 with Kim Possible and Violet Parr LoRAs.",
+      "name": "FreeFuse Krea2 Archer Queen Satoru Gojo Workflow",
+      "description": "Two-phase FreeFuse workflow for Krea2 with Archer Queen and Satoru Gojo LoRAs.",
       "author": "FreeFuse Team",
       "version": "2.1",
       "notes": "Krea2 workflow using the fixed Qwen3-VL text encoder template, two subject LoRAs, Phase 1 mask collection, and Phase 2 masked generation.",
@@ -1825,12 +1825,12 @@
         ],
         "loras": [
           {
-            "name": "FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors",
-            "note": "User-provided Krea2 LoRA for the kimpossible trigger."
+            "name": "archer_queen_krea2.safetensors",
+            "note": "User-provided Krea2 LoRA for the archer-queen trigger."
           },
           {
-            "name": "FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors",
-            "note": "User-provided Krea2 LoRA for the violetparr trigger."
+            "name": "satoru_gojo_krea2.safetensors",
+            "note": "User-provided Krea2 LoRA for the satoru gojo trigger."
           }
         ]
       }
@@ -1838,8 +1838,8 @@
     "workflowRendererVersion": "LG",
     "frontendVersion": "1.45.20",
     "metadata": {
-      "name": "FreeFuse Krea2 Kim Violet Workflow",
-      "description": "Two-phase FreeFuse workflow for Krea2 with Kim Possible and Violet Parr LoRAs."
+      "name": "FreeFuse Krea2 Archer Queen Satoru Gojo Workflow",
+      "description": "Two-phase FreeFuse workflow for Krea2 with Archer Queen and Satoru Gojo LoRAs."
     },
     "VHS_latentpreview": false,
     "VHS_latentpreviewrate": 0,

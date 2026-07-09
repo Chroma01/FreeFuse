@@ -12,8 +12,8 @@ WORK_DIR="${WORK_DIR:-/tmp/freefuse-krea2}"
 FREEFUSE_REPO="${FREEFUSE_REPO:-${DEFAULT_REPO_DIR}}"
 LORA_SOURCE_DIR="${LORA_SOURCE_DIR:-${WORK_DIR}/input_loras}"
 LOCAL_DOWNLOADS="${LOCAL_DOWNLOADS:-${HOME}/Downloads}"
-KIM_LORA_FILE="${KIM_LORA_FILE:-${LOCAL_DOWNLOADS}/Krea 2 - Kim Possible.safetensors}"
-VIOLET_LORA_FILE="${VIOLET_LORA_FILE:-${LOCAL_DOWNLOADS}/Krea 2 - Violet Parr.safetensors}"
+KIM_LORA_FILE="${KIM_LORA_FILE:-${LOCAL_DOWNLOADS}/archer_queen_krea2.safetensors}"
+VIOLET_LORA_FILE="${VIOLET_LORA_FILE:-${LOCAL_DOWNLOADS}/satoru_gojo_krea2.safetensors}"
 BUNDLE_PATH="${BUNDLE_PATH:-${WORK_DIR}/krea2_character_loras.tar}"
 
 for file in "${KIM_LORA_FILE}" "${VIOLET_LORA_FILE}"; do
@@ -26,19 +26,19 @@ done
 mkdir -p "${WORK_DIR}" "${LORA_SOURCE_DIR}"
 
 log "staging LoRAs under ${LORA_SOURCE_DIR}"
-cp -f "${KIM_LORA_FILE}" "${LORA_SOURCE_DIR}/Krea 2 - Kim Possible.safetensors"
-cp -f "${VIOLET_LORA_FILE}" "${LORA_SOURCE_DIR}/Krea 2 - Violet Parr.safetensors"
+cp -f "${KIM_LORA_FILE}" "${LORA_SOURCE_DIR}/archer_queen_krea2.safetensors"
+cp -f "${VIOLET_LORA_FILE}" "${LORA_SOURCE_DIR}/satoru_gojo_krea2.safetensors"
 
 log "writing checksums"
 (
   cd "${LORA_SOURCE_DIR}"
-  shasum -a 256 "Krea 2 - Kim Possible.safetensors" "Krea 2 - Violet Parr.safetensors" > SHA256SUMS
+  shasum -a 256 "archer_queen_krea2.safetensors" "satoru_gojo_krea2.safetensors" > SHA256SUMS
 )
 
 log "creating bundle ${BUNDLE_PATH}"
 tar -C "${LORA_SOURCE_DIR}" -cvf "${BUNDLE_PATH}" \
-  "Krea 2 - Kim Possible.safetensors" \
-  "Krea 2 - Violet Parr.safetensors" \
+  "archer_queen_krea2.safetensors" \
+  "satoru_gojo_krea2.safetensors" \
   SHA256SUMS
 
 ls -lh "${BUNDLE_PATH}"

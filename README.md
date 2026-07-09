@@ -26,6 +26,9 @@ ln -s /path/to/FreeFuse/comfyui ComfyUI/custom_nodes
 - Harry: https://huggingface.co/lsmpp/freefuse_community_loras/resolve/main/harry_potter.safetensors?download=true
 - Jinx (Z-Image-Turbo): https://huggingface.co/lsmpp/freefuse_example_loras/resolve/main/Jinx_Arcane_zit.safetensors?download=true
 - Skeletor (Z-Image-Turbo): https://huggingface.co/lsmpp/freefuse_example_loras/resolve/main/skeletor_zit.safetensors?download=true
+- Archer Queen (Krea2): https://huggingface.co/lsmpp/freefuse_example_loras/resolve/main/archer_queen_krea2.safetensors?download=true
+- Kim Possible (Krea2): https://huggingface.co/lsmpp/freefuse_example_loras/resolve/main/kim_possible_krea2.safetensors?download=true
+- Satoru Gojo (Krea2): https://huggingface.co/lsmpp/freefuse_example_loras/resolve/main/satoru_gojo_krea2.safetensors?download=true
 
 > The workflows expect these filenames by default:
 > - Flux: harry_potter_flux.safetensors, daiyu_lin_flux.safetensors
@@ -34,7 +37,7 @@ ln -s /path/to/FreeFuse/comfyui ComfyUI/custom_nodes
 > - SDXL: harry_potter_xl.safetensors, daiyu_lin_xl.safetensors
 > - Z-Image-Turbo: Jinx_Arcane_zit.safetensors, skeletor_zit.safetensors
 > - Krea2 Turbo: krea2_turbo_fp8_scaled.safetensors + qwen3vl_4b_fp8_scaled.safetensors + qwen_image_vae.safetensors, or the larger bf16 pair krea2_turbo_bf16.safetensors + qwen3vl_4b_bf16.safetensors for Apple MPS testing
-> - Krea2 example LoRAs: FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors, FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors
+> - Krea2 example LoRAs: archer_queen_krea2.safetensors, kim_possible_krea2.safetensors, satoru_gojo_krea2.safetensors
 > If you use the downloads above, rename the files or update the workflow nodes.
 
 **Prompt**
@@ -89,7 +92,7 @@ Example:
 
 - Flux uses FluxGuidance for CFG; set KSampler CFG to 1.0
 - Flux2.Klein uses CLIPTextEncode + CLIPLoader(type=`flux2`); keep KSampler CFG at 1.0 as a safe default
-- Krea2 uses CLIPTextEncode + CLIPLoader(type=`krea2`); the included comparison runner follows the official Krea2 Turbo 8-step KSampler setup
+- Krea2 uses CLIPTextEncode + CLIPLoader(type=`krea2`); the included comparison runner keeps Phase 1 and Phase 2 at 12 steps by default
 - SDXL uses KSampler CFG directly (recommended 7.0)
 
 ## Krea2 Comparison Tests
@@ -126,10 +129,10 @@ Then run a smaller local comparison first. If this fails due to memory pressure,
   --device mps \
   --unet-name krea2_turbo_bf16.safetensors \
   --clip-name qwen3vl_4b_bf16.safetensors \
-  --kim-lora-file "/tmp/freefuse-krea2/input_loras/Krea 2 - Kim Possible.safetensors" \
-  --violet-lora-file "/tmp/freefuse-krea2/input_loras/Krea 2 - Violet Parr.safetensors" \
+  --kim-lora-file "/tmp/freefuse-krea2/input_loras/archer_queen_krea2.safetensors" \
+  --violet-lora-file "/tmp/freefuse-krea2/input_loras/satoru_gojo_krea2.safetensors" \
   --output-dir /tmp/freefuse-krea2/results/krea2_mps_bf16 \
-  --mode both --width 512 --height 512 --steps 8 --phase1-steps 8 --collect-step 3
+  --mode both --width 512 --height 512 --steps 12 --phase1-steps 12 --collect-step 3
 ```
 
 To stage the local character LoRAs before copying them to a CUDA host:

@@ -146,15 +146,15 @@ class Krea2WorkflowTests(unittest.TestCase):
         concept_values = self.nodes[6]["widgets_values"]
 
         self.assertEqual(token_prompt, prompt)
-        self.assertIn("kimpossible", prompt)
-        self.assertIn("violetparr", prompt)
-        self.assertEqual(concept_values[0], "kimpossible")
-        self.assertIn("kimpossible, Kim Possible", concept_values[1])
-        self.assertEqual(concept_values[2], "violetparr")
-        self.assertIn("violetparr, Violet Parr", concept_values[3])
+        self.assertIn("archer-queen", prompt)
+        self.assertIn("satoru gojo", prompt)
+        self.assertEqual(concept_values[0], "archer-queen")
+        self.assertIn("archer-queen, Archer Queen", concept_values[1])
+        self.assertEqual(concept_values[2], "satoru-gojo")
+        self.assertIn("satoru gojo, white hair, black blindfold", concept_values[3])
 
         stale_text = "\n".join([prompt] + [str(v) for v in concept_values[:4]])
-        for stale in ("Jinx", "Skeletor", "Durian"):
+        for stale in ("Kim Possible", "kimpossible", "Violet Parr", "violetparr", "Jinx", "Skeletor", "Durian"):
             self.assertNotIn(stale, stale_text)
 
     def test_model_and_lora_paths_are_krea2_specific(self):
@@ -169,13 +169,22 @@ class Krea2WorkflowTests(unittest.TestCase):
             if node.get("type") == "FreeFuseLoRALoader"
         }
         self.assertEqual(
-            lora_values["LoRA 1: Kim Possible"][:2],
-            ["FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors", "kimpossible"],
+            lora_values["LoRA 1: Archer Queen"][:2],
+            ["archer_queen_krea2.safetensors", "archer-queen"],
         )
         self.assertEqual(
-            lora_values["LoRA 2: Violet Parr"][:2],
-            ["FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors", "violetparr"],
+            lora_values["LoRA 2: Satoru Gojo"][:2],
+            ["satoru_gojo_krea2.safetensors", "satoru-gojo"],
         )
+
+    def test_phase2_defaults_match_phase1_seed_and_steps(self):
+        phase1_values = self.nodes[12]["widgets_values"]
+        phase2_values = self.nodes[16]["widgets_values"]
+
+        self.assertEqual(phase1_values[0], 8)
+        self.assertEqual(phase1_values[1], 12)
+        self.assertEqual(phase2_values[0], phase1_values[0])
+        self.assertEqual(phase2_values[2], phase1_values[1])
 
 
 if __name__ == "__main__":
