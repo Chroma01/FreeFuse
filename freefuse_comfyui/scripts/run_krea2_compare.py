@@ -19,29 +19,32 @@ from typing import Dict, Tuple
 
 
 PROMPT = (
-    "On the left stands kimpossible, Kim Possible, a teenage cartoon girl with long red-orange hair, "
-    "green eyes, wearing a fitted green cropped shirt and black pants. On the right stands violetparr, "
-    "Violet Parr, a superhero girl with short black hair with purple highlights, purple eyes, wearing a "
-    "red and black superhero bodysuit and black gloves. They are standing on a cinematic city rooftop at "
-    "sunset with glass buildings in the background, full body, two clearly separated characters, clean "
-    "composition, no merged faces, no costume swapping."
+    "On the left stands archer-queen, Archer Queen, a stylized fantasy queen archer with long purple hair "
+    "and straight bangs, a gold crown, green tunic dress, purple cloak, gold shoulder armor and bracers, "
+    "carrying a wooden crossbow and a quiver of red arrows. On the right stands satoru gojo, white hair, "
+    "black blindfold, Satoru Gojo, an anime sorcerer with spiky white hair, a glossy black blindfold, "
+    "pale skin, a confident smile, and a high-collared black jacket, making a two-finger peace sign. "
+    "They are standing in a cinematic fantasy castle hall with banners and torchlight in the background, "
+    "full body, two clearly separated characters, clean composition, no merged faces, no costume swapping."
 )
 
 NEGATIVE_PROMPT = (
     "low quality, blurry, merged characters, duplicate face, wrong costume, extra limbs, deformed hands"
 )
 
-KIM_CONCEPT = (
-    "kimpossible, Kim Possible, a teenage cartoon girl with long red-orange hair, green eyes, "
-    "wearing a fitted green cropped shirt and black pants"
+ARCHER_CONCEPT = (
+    "archer-queen, Archer Queen, a stylized fantasy queen archer with long purple hair and straight bangs, "
+    "a gold crown, green tunic dress, purple cloak, gold shoulder armor and bracers, carrying a wooden "
+    "crossbow and a quiver of red arrows"
 )
 
-VIOLET_CONCEPT = (
-    "violetparr, Violet Parr, a superhero girl with short black hair with purple highlights, "
-    "purple eyes, wearing a red and black superhero bodysuit and black gloves"
+SATORU_CONCEPT = (
+    "satoru gojo, white hair, black blindfold, Satoru Gojo, an anime sorcerer with spiky white hair, "
+    "a glossy black blindfold, pale skin, a confident smile, and a high-collared black jacket, making "
+    "a two-finger peace sign"
 )
 
-BACKGROUND_CONCEPT = "a cinematic city rooftop at sunset with glass buildings in the background"
+BACKGROUND_CONCEPT = "a cinematic fantasy castle hall with banners and torchlight in the background"
 
 
 def parse_args() -> argparse.Namespace:
@@ -56,22 +59,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", choices=("auto", "cpu", "mps"), default="auto")
     parser.add_argument("--width", type=int, default=512)
     parser.add_argument("--height", type=int, default=512)
-    parser.add_argument("--steps", type=int, default=8)
+    parser.add_argument("--steps", type=int, default=12)
     parser.add_argument("--phase1-steps", type=int, default=None)
     parser.add_argument("--collect-step", type=int, default=3)
     parser.add_argument("--collect-block", type=int, default=10)
     parser.add_argument("--collect-block-end", type=int, default=10)
-    parser.add_argument("--seed", type=int, default=354347915735006)
+    parser.add_argument("--seed", type=int, default=8)
     parser.add_argument("--cfg", type=float, default=1.0)
     parser.add_argument("--sampler", default="euler")
     parser.add_argument("--scheduler", default="simple")
     parser.add_argument("--unet-name", default="krea2_turbo_fp8_scaled.safetensors")
     parser.add_argument("--clip-name", default="qwen3vl_4b_fp8_scaled.safetensors")
     parser.add_argument("--vae-name", default="qwen_image_vae.safetensors")
-    parser.add_argument("--kim-lora-name", default="FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors")
-    parser.add_argument("--violet-lora-name", default="FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors")
-    parser.add_argument("--kim-lora-file", type=Path, default=downloads / "Krea 2 - Kim Possible.safetensors")
-    parser.add_argument("--violet-lora-file", type=Path, default=downloads / "Krea 2 - Violet Parr.safetensors")
+    parser.add_argument("--kim-lora-name", default="archer_queen_krea2.safetensors")
+    parser.add_argument("--violet-lora-name", default="satoru_gojo_krea2.safetensors")
+    parser.add_argument("--kim-lora-file", type=Path, default=downloads / "archer_queen_krea2.safetensors")
+    parser.add_argument("--violet-lora-file", type=Path, default=downloads / "satoru_gojo_krea2.safetensors")
     parser.add_argument("--lora-strength", type=float, default=0.85)
     parser.add_argument("--bias-scale", type=float, default=4.0)
     parser.add_argument("--positive-bias-scale", type=float, default=2.0)
@@ -259,7 +262,7 @@ def load_base_graph(nodes, args: argparse.Namespace, progress: Progress):
         model,
         clip,
         args.kim_lora_name,
-        "kimpossible",
+        "archer-queen",
         args.lora_strength,
         args.lora_strength,
     )
@@ -267,7 +270,7 @@ def load_base_graph(nodes, args: argparse.Namespace, progress: Progress):
         model,
         clip,
         args.violet_lora_name,
-        "violetparr",
+        "satoru-gojo",
         args.lora_strength,
         args.lora_strength,
         data,
@@ -275,10 +278,10 @@ def load_base_graph(nodes, args: argparse.Namespace, progress: Progress):
     progress.report("Krea2 LoRAs loaded")
 
     data = N["FreeFuseConceptMap"]().create_map(
-        "kimpossible",
-        KIM_CONCEPT,
-        "violetparr",
-        VIOLET_CONCEPT,
+        "archer-queen",
+        ARCHER_CONCEPT,
+        "satoru-gojo",
+        SATORU_CONCEPT,
         "",
         "",
         "",

@@ -1,6 +1,7 @@
 flux2
 linux_forever_comfyui
 # loras
+loras/*_krea2.safetensors
 diffusers
 peft
 debug*

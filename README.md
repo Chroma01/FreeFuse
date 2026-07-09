@@ -19,6 +19,7 @@
 - [x] Supports Z-Image-turbo in ComfyUI
 - [x] Supports FLUX.2-klein-4B/9B  in diffusers
 - [x] Supports FLUX.2-klein-4B/9B in ComfyUI
+- [x] Supports Krea2 in ComfyUI
 - [x] Support ControlNet+FreeFuse in ComfyUI
 - [ ] Exploring FreeFuse in text2video model
 
@@ -137,6 +138,8 @@ python main_freefuse_z_image.py
 
 Thanks for [Tekemo](https://civarchive.com/users/Tekemo) and [jrewingwannabe947](https://civitai.com/user/jrewingwannabe947)'s ZIT LoRAs, which are used in our Z-Image-turbo examples.
 
+Thanks to [gpl1967](https://github.com/gpl1967) and [merermero](https://github.com/merermero) for the Krea2 support request and discussion in [issue #26](https://github.com/yaoliliu/FreeFuse/issues/26).
+
 <p align="center">
   <img src="assets/compare_all.png" alt="Architecture" width="100%">
 </p>
@@ -144,5 +147,4 @@ Thanks for [Tekemo](https://civarchive.com/users/Tekemo) and [jrewingwannabe947]
 <p align="center">
   <em>FreeFuse solves feature conflicts between multiple subject LoRAs without additional training in flux1.dev, sdxl, z-image and more.</em>
 </p>
-
 

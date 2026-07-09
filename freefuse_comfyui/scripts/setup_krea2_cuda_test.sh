@@ -20,8 +20,8 @@ FREEFUSE_REPO="${FREEFUSE_REPO:-${DEFAULT_REPO_DIR}}"
 COMFYUI_DIR="${COMFYUI_DIR:-${WORK_DIR}/ComfyUI}"
 VENV_DIR="${VENV_DIR:-${WORK_DIR}/.venv}"
 LORA_SOURCE_DIR="${LORA_SOURCE_DIR:-${WORK_DIR}/input_loras}"
-KIM_LORA_FILE="${KIM_LORA_FILE:-${LORA_SOURCE_DIR}/Krea 2 - Kim Possible.safetensors}"
-VIOLET_LORA_FILE="${VIOLET_LORA_FILE:-${LORA_SOURCE_DIR}/Krea 2 - Violet Parr.safetensors}"
+KIM_LORA_FILE="${KIM_LORA_FILE:-${LORA_SOURCE_DIR}/archer_queen_krea2.safetensors}"
+VIOLET_LORA_FILE="${VIOLET_LORA_FILE:-${LORA_SOURCE_DIR}/satoru_gojo_krea2.safetensors}"
 COMFYUI_REF="${COMFYUI_REF:-master}"
 KREA2_REPO="${KREA2_REPO:-Comfy-Org/Krea-2}"
 KREA2_PRECISION="${KREA2_PRECISION:-fp8}"
@@ -142,9 +142,9 @@ else
   ln -s "${FREEFUSE_REPO}/freefuse_comfyui" "${CUSTOM_NODE_LINK}"
 fi
 
-mkdir -p "${COMFYUI_DIR}/models/loras/FreeFuse/Krea2"
-ln -sfn "${KIM_LORA_FILE}" "${COMFYUI_DIR}/models/loras/FreeFuse/Krea2/Krea 2 - Kim Possible.safetensors"
-ln -sfn "${VIOLET_LORA_FILE}" "${COMFYUI_DIR}/models/loras/FreeFuse/Krea2/Krea 2 - Violet Parr.safetensors"
+mkdir -p "${COMFYUI_DIR}/models/loras"
+ln -sfn "${KIM_LORA_FILE}" "${COMFYUI_DIR}/models/loras/archer_queen_krea2.safetensors"
+ln -sfn "${VIOLET_LORA_FILE}" "${COMFYUI_DIR}/models/loras/satoru_gojo_krea2.safetensors"
 
 log "LoRA files found"
 log "ComfyUI: ${COMFYUI_DIR}"
@@ -164,5 +164,5 @@ ${VENV_DIR}/bin/python ${FREEFUSE_REPO}/freefuse_comfyui/scripts/run_krea2_compa
   --kim-lora-file "${KIM_LORA_FILE}" \\
   --violet-lora-file "${VIOLET_LORA_FILE}" \\
   --output-dir ${WORK_DIR}/results/krea2_compare \\
-  --mode both --width 1024 --height 1024 --steps 8 --phase1-steps 8 --collect-step 3
+  --mode both --width 1024 --height 1024 --steps 12 --phase1-steps 12 --collect-step 3
 EOF
