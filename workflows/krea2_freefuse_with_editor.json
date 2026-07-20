@@ -2,7 +2,7 @@
   "id": "4317fa4a-8c4e-44ce-87ac-86a4257b12ee",
   "revision": 0,
   "last_node_id": 110,
-  "last_link_id": 60,
+  "last_link_id": 82,
   "nodes": [
     {
       "id": 107,
@@ -618,7 +618,6 @@
           "type": "MODEL",
           "slot_index": 0,
           "links": [
-            52,
             55
           ]
         },
@@ -627,7 +626,6 @@
           "type": "CLIP",
           "slot_index": 1,
           "links": [
-            53,
             56
           ]
         },
@@ -636,7 +634,6 @@
           "type": "FREEFUSE_DATA",
           "slot_index": 2,
           "links": [
-            54,
             57
           ]
         }
