@@ -2,7 +2,7 @@
   "id": "d8a126d2-fb3f-4a33-88f8-908e9dc41bc9",
   "revision": 0,
   "last_node_id": 104,
-  "last_link_id": 57,
+  "last_link_id": 58,
   "nodes": [
     {
       "id": 100,
@@ -235,7 +235,7 @@
         {
           "name": "freefuse_data",
           "type": "FREEFUSE_DATA",
-          "link": 14
+          "link": 58
         },
         {
           "name": "latent",
@@ -574,7 +574,8 @@
           "type": "FREEFUSE_DATA",
           "slot_index": 0,
           "links": [
-            14
+            14,
+            58
           ]
         }
       ],
@@ -1317,6 +1318,14 @@
       0,
       12,
       4,
+      "FREEFUSE_DATA"
+    ],
+    [
+      58,
+      8,
+      0,
+      14,
+      2,
       "FREEFUSE_DATA"
     ],
     [
