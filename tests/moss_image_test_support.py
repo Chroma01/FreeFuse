@@ -23,11 +23,6 @@ def moss_lora_config():
 
 
 def moss_prompt_config():
-    concepts = {
-        "tinkerbell": "t1nk3r, a blonde fairy with blue eyes, a green dress and translucent wings",
-        "albedo": "lbd0c1tr0n, a black-haired woman with golden eyes, curved white horns, a white dress and black feathered wings",
-    }
-    prompt = ("An anime illustration of two adult characters in a sunny garden: "
-              + concepts["tinkerbell"] + ", on the left; " + concepts["albedo"]
-              + ", on the right. Both are smiling and holding flowers, full body.")
-    return prompt, "", concepts, "a sunny garden", "tinkerbell", "albedo"
+    concepts = {'tinkerbell': 't1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style', 'albedo': 'lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style'}
+    prompt = 'A close portrait of two adult characters standing shoulder to shoulder in a sunny garden with flowers: t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style on the left, and lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style on the right. Both look at the viewer with a gentle smile, upper bodies, detailed faces.'
+    return prompt, "", concepts, 'a sunny garden with flowers', "tinkerbell", "albedo"

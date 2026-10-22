@@ -1,7 +1,7 @@
 [project]
 name = "freefuse"
-description = "FreeFuse: Easily multi LoRA multi subject Generation! 🤗\n Attention: Upgrade to v1.0.14 or newer if you face the 'TypeError: unsupported format string passed to GGMLTensor.format' error."
-version = "1.0.14"
+description = "FreeFuse: spatially compose multi-subject LoRAs for FLUX, Z-Image, Klein, SDXL, Krea2 and MOSS Image. Upgrade to v1.0.14+ for GGUF tensor-format fixes."
+version = "1.1.0"
 license = {file = "LICENSE"} 
 # classifiers = [
 #     # For OS-independent nodes (works on all operating systems)
@@ -20,7 +20,7 @@ license = {file = "LICENSE"}
 #     "Environment :: GPU :: Apple Metal",    # Apple Metal support
 # ]
 
-dependencies = ["# ComfyUI-FreeFuse requirements", "# Core dependencies should be installed with FreeFuse main package", "# ComfyUI is assumed to be already installed", "# torch>=2.0.0", "# diffusers>=0.21.0", "# transformers>=4.25.0"]
+dependencies = []  # Runtime dependencies are supplied by ComfyUI.
 
 [project.urls]
 Repository = "https://github.com/yaoliliu/FreeFuse"

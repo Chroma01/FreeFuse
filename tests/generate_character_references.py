@@ -11,10 +11,24 @@ import json
 import sys
 from pathlib import Path
 
+def reference_prompt(kind, name, description, background):
+    if kind == "z_image" and name == "skeleton":
+        # Franchise names can induce a title card instead of a scenic character reference.
+        description = description.replace("Masters of the Universe character, ", "")
+        return (
+            "A picture of one character, " + description + ", " + background + ". "
+            "The character stands in an uninterrupted landscape extending to every edge "
+            "of the image. Full character illustration without lettering, captions or logos."
+        )
+    prefix = "Realistic photography, portrait of " if kind in ("flux", "sdxl") else "A picture of one character, "
+    return prefix + description + ", " + background + "."
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--models", default="flux,z_image,klein9b,klein4b,sdxl")
     parser.add_argument("--size", type=int, default=1024)
+    parser.add_argument("--character", choices=["harry", "daiyu", "jinx", "skeleton", "harry_klein", "shalnark_klein"], help="Generate only this adapter")
     parser.add_argument("--out-dir", required=True)
     args = parser.parse_args()
     if args.size < 256 or args.size % 64:
@@ -77,11 +91,14 @@ def main():
         _, negative, concepts, background, a, b = compare._default_prompt_config(kind)
         lora_a, lora_b, _, _, strength = compare._find_loras_for_model(kind)
         for name, lora_file in [(a, lora_a), (b, lora_b)]:
+            if args.character and name != args.character:
+                continue
+            prompt = reference_prompt(kind, name, concepts[name], background)
             target = out / kind / (name + ".png")
             existing = next((r for r in manifest["runs"] if r["model"] == kind and r["character"] == name), None)
             if target.exists() and existing is not None:
-                if existing["width"] != args.size or existing["height"] != args.size:
-                    raise ValueError(f"Existing reference has a different size; choose a new output directory: {target}")
+                if existing["width"] != args.size or existing["height"] != args.size or existing["prompt"] != prompt:
+                    raise ValueError(f"Existing reference has different settings; choose a new output directory: {target}")
                 print("EXISTS", target, flush=True)
                 continue
             compare._reset_comfy_memory(kind + "/" + name)
@@ -90,8 +107,6 @@ def main():
             weights = comfy.utils.load_torch_file(lora_path, safe_load=True)
             model_single, clip_single = comfy.sd.load_lora_for_models(model, clip, weights, strength, strength)
             del weights
-            prefix = "Realistic photography, portrait of " if kind in ("flux", "sdxl") else "A picture of one character, "
-            prompt = prefix + concepts[name] + ", " + background + "."
             conditioning, neg_conditioning = encode(kind, clip_single, prompt, negative)
             channels, h, w = compare._get_latent_shape(model_single, args.size, args.size)
             latent = torch.zeros([1, channels, h, w])
