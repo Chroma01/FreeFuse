@@ -93,6 +93,9 @@ def _normalize_model_type(model_type: Optional[str]) -> Optional[str]:
         return None
 
     aliases = {
+        "moss": "moss_image",
+        "moss-image": "moss_image",
+        "mossimage": "moss_image",
         "zimage": "z_image",
         "z-image": "z_image",
         "lumina2": "z_image",
@@ -134,6 +137,8 @@ def detect_model_type_from_model(model) -> str:
         return "unknown"
 
     model_cls = core_model.__class__.__name__.lower()
+    if "moss" in model_cls:
+        return "moss_image"
     if "krea2" in model_cls or "krea" in model_cls:
         return "krea2"
     if "nextdit" in model_cls or "lumina" in model_cls:
@@ -147,6 +152,8 @@ def detect_model_type_from_model(model) -> str:
     dm = getattr(core_model, "diffusion_model", None)
     if dm is not None:
         dm_cls = dm.__class__.__name__.lower()
+        if "moss" in dm_cls:
+            return "moss_image"
         if "krea2" in dm_cls or "krea" in dm_cls:
             return "krea2"
         # `txtfusion` is unique to Krea2's SingleStreamDiT - check before the
@@ -172,6 +179,8 @@ def detect_model_type_from_model(model) -> str:
     unet_cfg = getattr(model_cfg, "unet_config", None)
     if isinstance(unet_cfg, dict):
         image_model = str(unet_cfg.get("image_model", "")).lower()
+        if image_model in {"moss_image", "mossimage"}:
+            return "moss_image"
         if image_model == "krea2":
             return "krea2"
         if image_model == "flux2":
@@ -212,6 +221,8 @@ def detect_model_type(clip=None, model=None, model_type_hint: Optional[str] = No
 
     cond_stage_model = getattr(clip, "cond_stage_model", None)
     cond_stage_name = cond_stage_model.__class__.__name__.lower() if cond_stage_model is not None else ""
+    if "moss" in cond_stage_name:
+        return "moss_image"
     if "krea2" in cond_stage_name or "krea" in cond_stage_name:
         return "krea2"
     if "nextdit" in cond_stage_name or "zimage" in cond_stage_name or "lumina" in cond_stage_name:
@@ -232,6 +243,8 @@ def detect_model_type(clip=None, model=None, model_type_hint: Optional[str] = No
     # Qwen3-VL (attribute name "qwen3vl_4b") is Krea2-specific in this ecosystem
     # so far - check before the generic qwen3 fallback below.
     tokenizer_attr_names = set(vars(tokenizer).keys())
+    if "qwen35_9b" in tokenizer_attr_names:
+        return "moss_image"
     if (
         any("qwen3vl" in name.lower() for name in tokenizer_attr_names)
         or "qwen3vl" in clip_name
@@ -296,7 +309,7 @@ def _resolve_qwen3_tokenizer(tokenizer):
     "qwen3vl_4b" is Krea2's key (see comfy/text_encoders/krea2.py: Krea2TEModel
     passes name="qwen3vl_4b" to SD1ClipModel), distinct from Z-Image's "qwen3_4b".
     """
-    for key in ("qwen3_4b", "qwen3_8b", "qwen3vl_4b"):
+    for key in ("qwen35_9b", "qwen3_4b", "qwen3_8b", "qwen3vl_4b"):
         if hasattr(tokenizer, key):
             resolved = _extract_nested_tokenizer(getattr(tokenizer, key))
             if resolved is not None:
@@ -336,7 +349,7 @@ def get_tokenizer_for_model(clip, model_type: str = None):
     if tokenizer is None:
         raise ValueError("Could not find clip.tokenizer on CLIP object.")
 
-    if model_type in ("z_image", "flux2", "qwen3", "krea2"):
+    if model_type in ("z_image", "flux2", "qwen3", "krea2", "moss_image"):
         resolved = _resolve_qwen3_tokenizer(tokenizer)
         if resolved is not None:
             return resolved
@@ -531,7 +544,7 @@ def _flatten_chunked_token_ids(token_weight_pairs) -> List[int]:
     if isinstance(token_weight_pairs, dict):
         chunks = None
         # Prefer known text branches first.
-        for key in ("l", "qwen3vl_4b", "qwen3_8b", "qwen3_4b", "qwen3", "t5xxl", "clip_l", "g"):
+        for key in ("l", "qwen35_9b", "qwen3vl_4b", "qwen3_8b", "qwen3_4b", "qwen3", "t5xxl", "clip_l", "g"):
             if key in token_weight_pairs:
                 chunks = token_weight_pairs[key]
                 break
@@ -679,6 +692,43 @@ def find_concept_positions_clip(
     
     return concept_pos_map
 
+
+def find_concept_positions_moss(clip, tokenizer, prompts, concepts,
+                                filter_meaningless=True, filter_single_char=True):
+    """Use the actual MOSS token stream and whole-string offsets, including Unicode."""
+    import re
+    prompts = [prompts] if isinstance(prompts, str) else list(prompts)
+    result = {name: [] for name in concepts}
+    for prompt in prompts:
+        ids = _flatten_chunked_token_ids(clip.tokenize(prompt.strip()))
+        decoded = tokenizer.decode(ids, skip_special_tokens=False)
+        encoded = tokenizer(decoded, add_special_tokens=False, return_offsets_mapping=True)
+        if list(encoded["input_ids"]) != ids:
+            raise ValueError("MOSS tokenizer offsets do not reproduce the conditioning token stream.")
+        opening = "<|im_start|>user\n"
+        begin = decoded.find(opening)
+        if begin < 0:
+            raise ValueError("MOSS conditioning is missing the user turn.")
+        begin += len(opening)
+        end = decoded.find("<|im_end|>", begin)
+        if end < 0:
+            raise ValueError("MOSS conditioning is missing the end of the user turn.")
+        for name, concept in concepts.items():
+            if not isinstance(concept, str) or not concept.strip():
+                raise ValueError(f"MOSS concept {name!r} must be nonempty.")
+            spans = [(begin + m.start(), begin + m.end())
+                     for m in re.finditer(re.escape(concept), decoded[begin:end])]
+            positions = [i for i, (a, b) in enumerate(encoded["offset_mapping"])
+                         if b > a and any(a < stop and b > start for start, stop in spans)]
+            if not positions:
+                raise ValueError(f"MOSS concept {concept!r} does not occur in the encoded user prompt.")
+            # Keep Unicode byte tokens together; individual decode can contain U+FFFD.
+            if filter_meaningless and concept.isascii():
+                filtered = [i for i in positions if not is_meaningless_token(
+                    tokenizer.decode([ids[i]]), check_single_char=filter_single_char)]
+                positions = filtered or positions
+            result[name].append(positions)
+    return result
 
 def find_concept_positions_qwen3(
     clip,
@@ -1005,6 +1055,9 @@ def find_concept_positions(
     
     tokenizer = get_tokenizer_for_model(clip, model_type)
 
+    if model_type == "moss_image":
+        return find_concept_positions_moss(
+            clip, tokenizer, prompts, concepts, filter_meaningless, filter_single_char)
     if model_type == 'krea2':
         return find_concept_positions_krea2(
             clip, tokenizer, prompts, concepts,

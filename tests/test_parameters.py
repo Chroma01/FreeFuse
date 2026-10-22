@@ -206,6 +206,21 @@ class TestConfig:
     collect_block_end: Optional[int] = None
 
 
+# MOSS defaults are provisional; compare blocks with the supplied subject pair.
+def _moss_case(name, width=768, height=512, block=20, bias=4.0):
+    return TestConfig(
+        name=name, width=width, height=height, collect_block=block, collect_block_end=block,
+        temperature=4000.0, top_k_ratio=0.1, disable_lora_phase1=True, bg_scale=0.95,
+        use_morphological_cleaning=True, balance_iterations=15, bias_scale=bias,
+        positive_bias_scale=2.0)
+
+MOSS_TESTS = {
+    "aspect": [_moss_case("moss_square", 768, 768), _moss_case("moss_landscape"),
+               _moss_case("moss_portrait", 512, 768)],
+    "block": [_moss_case(f"moss_block_{b}", block=b) for b in (8, 20, 32, 38)],
+    "bias": [_moss_case(f"moss_bias_{b}", bias=b) for b in (0.0, 4.0)],
+}
+
 # Test configurations for different scenarios
 ASPECT_RATIO_TESTS = [
     TestConfig(
@@ -1106,7 +1121,10 @@ def load_loras(model, clip, model_type: str):
     
     lora_list = folder_paths.get_filename_list("loras")
     
-    if model_type == "z_image":
+    if model_type == "moss_image":
+        from moss_image_test_support import moss_lora_config
+        lora_a, lora_b, adapter_a, adapter_b, strength = moss_lora_config()
+    elif model_type == "z_image":
         # Z-Image uses Jinx + Skeletor LoRAs (aligned with main_freefuse_z_image.py)
         lora_a = next((l for l in lora_list if "jinx" in l.lower() and "zit" in l.lower()), None)
         lora_b = next((l for l in lora_list if "skeletor" in l.lower() and "zit" in l.lower()), None)
@@ -1166,6 +1184,12 @@ def load_loras(model, clip, model_type: str):
 def setup_concepts_and_conditioning(clip, freefuse_data, model_type: str):
     """Set up concept map and conditioning."""
     
+    if model_type == "moss_image":
+        from moss_image_test_support import moss_prompt_config
+        from test_freefuse_compare import setup_concepts_and_conditioning as setup
+        prompt, negative, concepts, background, a, b = moss_prompt_config()
+        freefuse_data["model_type"] = "moss_image"
+        return setup("moss_image", clip, freefuse_data, prompt, negative, concepts, background, a, b, None, 3.0)
     if model_type == "z_image":
         # Z-Image uses Jinx + Skeletor (aligned with main_freefuse_z_image.py)
         prompt = ("A picture of two characters, a starry night scene with northern lights in background: "
@@ -1379,7 +1403,10 @@ def run_single_test(
             # Flux2/Klein: 4 steps, cfg=1.0, Flux2 mu-shift schedule (custom sigmas)
             # SDXL: 30 steps, cfg=7.0, collect_step=10
             p1_sigmas = None
-            if model_type == "z_image":
+            if model_type == "moss_image":
+                p1_steps, p1_collect, p1_cfg = 30, 5, 1.0
+                p1_scheduler = "simple"
+            elif model_type == "z_image":
                 p1_steps, p1_collect, p1_cfg = 12, 3, 1.0
                 p1_scheduler = "simple"
             elif model_type in ("klein4b", "klein9b"):
@@ -1458,7 +1485,9 @@ def run_single_test(
         
         # Use matching parameters for Phase 2
         p2_sigmas = None
-        if model_type == "z_image":
+        if model_type == "moss_image":
+            p2_steps, p2_cfg, p2_scheduler = 30, 3.0, "simple"
+        elif model_type == "z_image":
             p2_steps, p2_cfg, p2_scheduler = 12, 1.0, "simple"  # cfg=1.0 = no CFG (cond-only)
         elif model_type in ("klein4b", "klein9b"):
             p2_steps, p2_cfg, p2_scheduler = 4, 1.0, "simple"
@@ -1543,7 +1572,11 @@ def run_test_suite(model_type: str, test_categories: List[str] = None):
     os.makedirs(output_dir, exist_ok=True)
     
     # Load models
-    if model_type == "flux":
+    if model_type == "moss_image":
+        from moss_image_test_support import load_moss_models
+        model, clip, vae = load_moss_models()
+        mt = "moss_image"
+    elif model_type == "flux":
         model, clip, vae, mt = load_flux_models()
     elif model_type == "klein4b":
         model, clip, vae, mt = load_flux2_klein_models("4b")
@@ -1563,7 +1596,9 @@ def run_test_suite(model_type: str, test_categories: List[str] = None):
     )
     
     # Select test categories - use Z-Image specific configs when model_type is z_image
-    if model_type == "z_image":
+    if model_type == "moss_image":
+        all_tests = MOSS_TESTS
+    elif model_type == "z_image":
         all_tests = {
             "aspect": ZIMAGE_ASPECT_RATIO_TESTS,
             "block": ZIMAGE_BLOCK_TESTS,
@@ -1661,6 +1696,7 @@ def main():
     parser.add_argument("--klein4b", action="store_true", help="Run Flux2.Klein 4B tests")
     parser.add_argument("--klein9b", action="store_true", help="Run Flux2.Klein 9B tests")
     parser.add_argument("--sdxl", action="store_true", help="Run SDXL tests")
+    parser.add_argument("--moss", action="store_true", help="Run MOSS Image tests")
     parser.add_argument("--zimage", action="store_true", help="Run Z-Image-Turbo tests")
     parser.add_argument("--all", action="store_true", help="Run all tests")
     parser.add_argument("--category", type=str, nargs="+", 
@@ -1672,7 +1708,7 @@ def main():
     args = parser.parse_args()
     
     # Default to all if nothing specified
-    if not args.flux and not args.klein4b and not args.klein9b and not args.sdxl and not args.zimage and not args.all:
+    if not args.flux and not args.klein4b and not args.klein9b and not args.sdxl and not args.zimage and not args.moss and not args.all:
         args.all = True
     
     categories = args.category
@@ -1681,6 +1717,9 @@ def main():
     
     results = {}
     
+    if args.moss or args.all:
+        results["moss_image"] = run_test_suite("moss_image", categories)
+
     if args.flux or args.all:
         try:
             results["flux"] = run_test_suite("flux", categories)

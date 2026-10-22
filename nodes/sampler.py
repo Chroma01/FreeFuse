@@ -276,7 +276,7 @@ for Phase 2 generation with the same seed and steps."""
                 auto_temperature = 4000.0   # matches reference FreeFuseZImageAttnProcessor
             elif patch_model_type in ("flux", "flux2"):
                 auto_temperature = 4000.0
-            elif patch_model_type == "krea2":
+            elif patch_model_type in ("krea2", "moss_image"):
                 auto_temperature = 4000.0   # single-stream, RoPE+QK-norm attn like Z-Image; tune later
             else:
                 auto_temperature = 300.0
@@ -307,7 +307,7 @@ for Phase 2 generation with the same seed and steps."""
             sdxl_collect_blocks = [(block_name, block_num, tf_idx)]
             print(f"[FreeFuse] SDXL collect block: ({block_name}, {block_num}, {tf_idx}) "
                   f"from region='{collect_region}'")
-        elif patch_model_type in ("flux", "flux2", "z_image", "krea2"):
+        elif patch_model_type in ("flux", "flux2", "z_image", "krea2", "moss_image"):
             range_start = int(collect_block)
             range_end = int(collect_block_end)
             if range_end < range_start:
@@ -339,7 +339,10 @@ for Phase 2 generation with the same seed and steps."""
             )
             
         krea2_replacer = None
-        if patch_model_type == "krea2":
+        if patch_model_type == "moss_image":
+            from ..freefuse_core.moss_image_support import apply_moss_collect_patches
+            apply_moss_collect_patches(model_clone, freefuse_state, range_collect_blocks)
+        elif patch_model_type == "krea2":
             krea2_replacer = apply_krea2_replace_patches(
                 model_clone, freefuse_state,
                 krea2_collect_blocks=range_collect_blocks,  # None means use [state.collect_block]
@@ -363,7 +366,7 @@ for Phase 2 generation with the same seed and steps."""
         img_h, img_w = self._latent_to_image_size(model_clone, latent_h, latent_w)
 
         # For Flux2 single-stream extraction, cache img sequence length for txt_len resolution.
-        if patch_model_type == "flux2":
+        if patch_model_type in ("flux2", "moss_image"):
             freefuse_state.collected_outputs["img_seq_len"] = latent_h * latent_w
         
         # For Z-Image: store sequence lengths in state so block_replace can access them
@@ -494,9 +497,9 @@ for Phase 2 generation with the same seed and steps."""
             # Re-enable LoRA before returning on error (if it was disabled)
             if bypass_manager is not None and disable_lora_phase1:
                 bypass_manager.enable_lora()
-            if patch_model_type == "krea2":
+            if patch_model_type in ("krea2", "moss_image"):
                 raise RuntimeError(
-                    "[FreeFuse Krea2] Phase 1 failed before collecting valid masks"
+                    f"[FreeFuse {patch_model_type}] Phase 1 failed before collecting valid masks"
                 ) from e
             # Return empty masks on error
             empty_masks = {name: torch.ones(latent_h, latent_w) for name in concepts}
@@ -636,9 +639,9 @@ for Phase 2 generation with the same seed and steps."""
                 anisotropy=anisotropy,
             )
         else:
-            if patch_model_type == "krea2":
+            if patch_model_type in ("krea2", "moss_image"):
                 raise RuntimeError(
-                    "[FreeFuse Krea2] Phase 1 produced no similarity maps; "
+                    f"[FreeFuse {patch_model_type}] Phase 1 produced no similarity maps; "
                     "refusing to create uniform masks."
                 )
             # Fallback: create uniform masks

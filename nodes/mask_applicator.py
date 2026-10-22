@@ -309,6 +309,12 @@ When enabled, constructs soft attention bias to guide cross-attention:
                   f"(bias_scale={bias_scale}, positive_scale={positive_bias_scale}, "
                   f"bidirectional={bidirectional}, img_seq={img_seq_len}, cap_seq={cap_seq_len})")
 
+        elif model_type == "moss_image":
+            from ..freefuse_core.moss_image_support import apply_moss_bias_patches
+            flat_masks = {name: mask.reshape(1, -1) for name, mask in mask_dict.items()
+                          if not name.startswith("_")}
+            apply_moss_bias_patches(model_patcher, flat_masks, token_pos_maps, config, bias_blocks)
+
         elif model_type == "krea2":
             # Krea2 is single-stream, [txt, img] sequence (text FIRST, same as Z-Image's
             # captioning convention but opposite token order - see krea2_support.py).
