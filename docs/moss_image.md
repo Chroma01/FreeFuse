@@ -32,6 +32,10 @@ Download your MOSS character LoRAs separately. The example pair is:
 | tinkerbell | [Tinkerbell, by CitronLegacy](https://civitai.com/models/2884562) | [3415091](https://civitai.com/api/download/models/3415091) | t1nk3r |
 | albedo | [Albedo, by CitronLegacy](https://civitai.com/models/2809374) | [3416685](https://civitai.com/api/download/models/3416685) | lbd0c1tr0n |
 
+Single-LoRA references, generated independently with FreeFuse disabled: Tinkerbell on the left, Albedo on the right. These are reference generations, not conditioning images or original animation frames. Each uses its own LoRA at strength 1, seed 42, 30 steps and CFG 3 on MOSS Image SFT. [Exact reference prompts and settings](moss_image_single_references.json).
+
+![Tinkerbell and Albedo single-LoRA reference generations](../assets/moss_image_character_references.png)
+
 Civitai may require an API key. Keep credentials outside this repository and
 follow the creators' license and usage terms; model weights are not included.
 

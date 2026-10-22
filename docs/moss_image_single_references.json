@@ -1,0 +1,18 @@
+{
+  "prompts": {
+    "tinkerbell": "An illustration of a single adult character in a sunny garden: t1nk3r, Tinkerbell, a blonde fairy with blue eyes, a high hair bun, a short green dress and translucent fairy wings. She is smiling and holding flowers, full body, standing alone, detailed face.",
+    "albedo": "An illustration of a single adult character in a sunny garden: lbd0c1tr0n, Albedo from Overlord, a black-haired woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings. She is smiling and holding flowers, full body, standing alone, detailed face."
+  },
+  "seed": 42,
+  "steps": 30,
+  "guidance": 3,
+  "adapter_weight": 1,
+  "freefuse": false,
+  "model": "OpenMOSS-Team/MOSS-Image-SFT",
+  "width": 768,
+  "height": 768,
+  "lora_sha256": {
+    "tinkerbell": "4d7896f00b4904d38ad43ebdd3b80f7cc7a55bd2da1905e1af4e41c01b991bf0",
+    "albedo": "864978d0a9c492ecd6d8ea1f53396b0bd4cc8c0023e487b09c7e7bb2330f6197"
+  }
+}

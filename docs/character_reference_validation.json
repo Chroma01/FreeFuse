@@ -1,0 +1,403 @@
+{
+  "reference_type": "single LoRA generation, FreeFuse disabled",
+  "runs": [
+    {
+      "model": "sdxl",
+      "character": "harry",
+      "prompt": "Realistic photography, portrait of an European man wearing Hogwarts uniform, autumn leaves blurred in the background.",
+      "negative_prompt": "low quality, blurry, deformed, line art",
+      "seed": 77,
+      "steps": 30,
+      "cfg": 7.0,
+      "sampler": "euler",
+      "scheduler": "normal",
+      "width": 1024,
+      "height": 1024,
+      "lora": "harry_potter_xl.safetensors",
+      "lora_sha256": "5fe88552e3bd1471f0ae6d03c1b98d27722ac994f9d3b1a4bea54ca41fc4b533",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "checkpoint": "sd_xl_base_1.0.safetensors"
+      },
+      "output": "sdxl/harry.png",
+      "freefuse": false,
+      "image_sha256": "4b087f4a0f68ea4d53f5b117b2c4e7bff69024039412d6c658470a75b344bb16"
+    },
+    {
+      "model": "sdxl",
+      "character": "daiyu",
+      "prompt": "Realistic photography, portrait of an Asian woman wearing Chinese traditional clothing, autumn leaves blurred in the background.",
+      "negative_prompt": "low quality, blurry, deformed, line art",
+      "seed": 77,
+      "steps": 30,
+      "cfg": 7.0,
+      "sampler": "euler",
+      "scheduler": "normal",
+      "width": 1024,
+      "height": 1024,
+      "lora": "daiyu_lin_xl.safetensors",
+      "lora_sha256": "77f055ccef6ba6cbb9c9f36965b30788dc201cd7568010f28823061daf5331e4",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "checkpoint": "sd_xl_base_1.0.safetensors"
+      },
+      "output": "sdxl/daiyu.png",
+      "freefuse": false,
+      "image_sha256": "135839c12c3d1119c55481f903327a582d474a95e2b75bc31a591297adc88629"
+    },
+    {
+      "model": "klein4b",
+      "character": "harry_klein",
+      "prompt": "A picture of one character, harry potter, an European photorealistic style teenage wizard boy with messy black hair, round wire-frame glasses, and bright green eyes, wearing a white shirt, burgundy and gold striped tie, and dark robes, a starry night scene with northern lights.",
+      "negative_prompt": "",
+      "seed": 77,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "harry_klein_4b.safetensors",
+      "lora_sha256": "3c54a8e3c3dc195330641020f404c234eee3c221224dd5d0e9bea1425c2be232",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "flux-2-klein-4b-fp8.safetensors",
+        "text_encoders": [
+          "qwen_3_4b.safetensors"
+        ],
+        "vae": "flux2-vae.safetensors"
+      },
+      "output": "klein4b/harry_klein.png",
+      "freefuse": false,
+      "image_sha256": "7213aa02a7ccc4f2ff8ed2e1cedd81bf5064d82992acab9efa6ef05e41e5b775"
+    },
+    {
+      "model": "klein4b",
+      "character": "shalnark_klein",
+      "prompt": "A picture of one character, shalnark, an anime boy with blonde short haircut and turquoise eyes, wearing purple and teal futuristic uniform, determined expression, digital anime art style, a starry night scene with northern lights.",
+      "negative_prompt": "",
+      "seed": 77,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "shalnark_klein_4b.safetensors",
+      "lora_sha256": "ff525c47f74aed8021d76d8d3610424add723a680bbc058a88625b2e25c95040",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "flux-2-klein-4b-fp8.safetensors",
+        "text_encoders": [
+          "qwen_3_4b.safetensors"
+        ],
+        "vae": "flux2-vae.safetensors"
+      },
+      "output": "klein4b/shalnark_klein.png",
+      "freefuse": false,
+      "image_sha256": "43d524c3b0d6233d35d88d37989f3be54455243617db638a2fff87b059dd1583"
+    },
+    {
+      "model": "z_image",
+      "character": "jinx",
+      "prompt": "A picture of one character, Jinx_Arcane, a young woman with long blue hair in a loose braid and bright blue eyes, wearing a cropped halter top, gloves, striped pants with belts, and visible tattoos, a starry night scene with northern lights.",
+      "negative_prompt": "",
+      "seed": 42,
+      "steps": 12,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "Jinx_Arcane_zit.safetensors",
+      "lora_sha256": "473bbf8cefb9a832f2a0cb0cfd32950b28e19cc1ad149f49a46686338111783b",
+      "strength_model": 0.8,
+      "strength_clip": 0.8,
+      "model_files": {
+        "diffusion_model": "z_image_turbo_bf16.safetensors",
+        "text_encoders": [
+          "qwen_3_4b.safetensors"
+        ],
+        "vae": "ae.safetensors"
+      },
+      "output": "z_image/jinx.png",
+      "freefuse": false,
+      "image_sha256": "2930e0d3406dccacedb6bc9f54c72b7906e4db1e6f2e397021d2ff80125102c0"
+    },
+    {
+      "model": "z_image",
+      "character": "skeleton",
+      "prompt": "A picture of one character, Skeletor in purple hooded cloak flexing muscular blue arms triumphantly, skull face grinning menacingly, cartoon animation style, Masters of the Universe character, vibrant purple and blue color scheme, a starry night scene with northern lights.",
+      "negative_prompt": "",
+      "seed": 42,
+      "steps": 12,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "skeletor_zit.safetensors",
+      "lora_sha256": "3f4fd93b0e9b01f59a5fe833a8c1ced71eb48ba01316d7c484b459d3806b1c84",
+      "strength_model": 0.8,
+      "strength_clip": 0.8,
+      "model_files": {
+        "diffusion_model": "z_image_turbo_bf16.safetensors",
+        "text_encoders": [
+          "qwen_3_4b.safetensors"
+        ],
+        "vae": "ae.safetensors"
+      },
+      "output": "z_image/skeleton.png",
+      "freefuse": false,
+      "image_sha256": "1852720830fb0393616061124fb91217e7ed37e4bbba72f9043bb69c4d280d98"
+    },
+    {
+      "model": "flux",
+      "character": "harry",
+      "prompt": "Realistic photography, portrait of harry potter, an European photorealistic style teenage wizard boy with messy black hair, round wire-frame glasses, and bright green eyes, wearing a white shirt, burgundy and gold striped tie, and dark robes, autumn leaves blurred in the background.",
+      "negative_prompt": "low quality, blurry, deformed, ugly, bad anatomy",
+      "seed": 42,
+      "steps": 28,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "harry_potter_flux.safetensors",
+      "lora_sha256": "e960950d77dda8a29a74014d7782e51c6c57b818bff9999b3e8ba07d7dffc077",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "flux1-dev-fp8.safetensors",
+        "text_encoders": [
+          "clip_l.safetensors",
+          "t5xxl_fp8_e4m3fn.safetensors"
+        ],
+        "vae": "ae.safetensors"
+      },
+      "output": "flux/harry.png",
+      "freefuse": false,
+      "image_sha256": "fd218a41c56cb8a98a8fe2816bc4970d04875a727b3e9a6f68eaac1be63712c3"
+    },
+    {
+      "model": "flux",
+      "character": "daiyu",
+      "prompt": "Realistic photography, portrait of daiyu_lin, a young East Asian photorealistic style woman in traditional Chinese hanfu dress, elaborate black updo hairstyle adorned with delicate white floral hairpins and ornaments, dangling red tassel earrings, soft pink and red color palette, gentle smile with knowing expression, autumn leaves blurred in the background.",
+      "negative_prompt": "low quality, blurry, deformed, ugly, bad anatomy",
+      "seed": 42,
+      "steps": 28,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "daiyu_lin_flux.safetensors",
+      "lora_sha256": "fc4f334db6184b4723b927d22c691aead3495913b6982c3be9fd7aaf79ce95b0",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "flux1-dev-fp8.safetensors",
+        "text_encoders": [
+          "clip_l.safetensors",
+          "t5xxl_fp8_e4m3fn.safetensors"
+        ],
+        "vae": "ae.safetensors"
+      },
+      "output": "flux/daiyu.png",
+      "freefuse": false,
+      "image_sha256": "f1b7581f808aa5ad8e1223cfe3c04a88fa1149f329c62d7f4c693cb681e7eab1"
+    },
+    {
+      "model": "klein9b",
+      "character": "harry_klein",
+      "prompt": "A picture of one character, harry potter, an European photorealistic style teenage wizard boy with messy black hair, round wire-frame glasses, and bright green eyes, wearing a white shirt, burgundy and gold striped tie, and dark robes, a starry night scene with northern lights.",
+      "negative_prompt": "",
+      "seed": 0,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "harry_klein_9b.safetensors",
+      "lora_sha256": "601dc2d210ee9c03fb236e0fdba3d0c749fb4040ea99d0ed1056f35966523a57",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "flux-2-klein-9b-fp8.safetensors",
+        "text_encoders": [
+          "qwen_3_8b_fp8mixed.safetensors"
+        ],
+        "vae": "flux2-vae.safetensors"
+      },
+      "output": "klein9b/harry_klein.png",
+      "freefuse": false,
+      "image_sha256": "567daa9806640de6659c6fe3c4f4ff9bcb5256b9378e708fdb52a203e0592c03"
+    },
+    {
+      "model": "klein9b",
+      "character": "shalnark_klein",
+      "prompt": "A picture of one character, shalnark, an anime boy with blonde short haircut and turquoise eyes, wearing purple and teal futuristic uniform, determined expression, digital anime art style, a starry night scene with northern lights.",
+      "negative_prompt": "",
+      "seed": 0,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "shalnark_klein_9b.safetensors",
+      "lora_sha256": "277b3cb8c99f2d6f8dad4a39a7c5c3046729ebe466a5450c13bffaef79c990e8",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "flux-2-klein-9b-fp8.safetensors",
+        "text_encoders": [
+          "qwen_3_8b_fp8mixed.safetensors"
+        ],
+        "vae": "flux2-vae.safetensors"
+      },
+      "output": "klein9b/shalnark_klein.png",
+      "freefuse": false,
+      "image_sha256": "0ab216e30238d6a81017b3133630aeae352097b2acf5cabcb51bc01107ae88c5"
+    }
+  ],
+  "output_paths_relative_to": "generated reference directory",
+  "comfyui_commit": "1a82e6d01f395b43275c77acd289af1eb7090bb9",
+  "original_comparison_sha256": "1c625669c706a6533e5677013719e524b83d7514658eb259448bd3011b9289ed",
+  "original_comparison_pixels_preserved": true,
+  "weight_sources": [
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "Jinx_Arcane_zit.safetensors",
+      "size": 170128288,
+      "sha256": "473bbf8cefb9a832f2a0cb0cfd32950b28e19cc1ad149f49a46686338111783b"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "daiyu_lin_flux.safetensors",
+      "size": 343806376,
+      "sha256": "fc4f334db6184b4723b927d22c691aead3495913b6982c3be9fd7aaf79ce95b0"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "daiyu_lin_xl.safetensors",
+      "size": 185717704,
+      "sha256": "77f055ccef6ba6cbb9c9f36965b30788dc201cd7568010f28823061daf5331e4"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "harry_klein_4b.safetensors",
+      "size": 92426688,
+      "sha256": "3c54a8e3c3dc195330641020f404c234eee3c221224dd5d0e9bea1425c2be232"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "harry_klein_9b.safetensors",
+      "size": 165704384,
+      "sha256": "601dc2d210ee9c03fb236e0fdba3d0c749fb4040ea99d0ed1056f35966523a57"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "harry_potter_flux.safetensors",
+      "size": 343806376,
+      "sha256": "e960950d77dda8a29a74014d7782e51c6c57b818bff9999b3e8ba07d7dffc077"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "harry_potter_xl.safetensors",
+      "size": 185717704,
+      "sha256": "5fe88552e3bd1471f0ae6d03c1b98d27722ac994f9d3b1a4bea54ca41fc4b533"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "shalnark_klein_4b.safetensors",
+      "size": 92426696,
+      "sha256": "ff525c47f74aed8021d76d8d3610424add723a680bbc058a88625b2e25c95040"
+    },
+    {
+      "repo": "yaoliliu/FreeFuse",
+      "path": "loras/shalnark_klein_9b.safetensors",
+      "size": 165704392,
+      "sha256": "277b3cb8c99f2d6f8dad4a39a7c5c3046729ebe466a5450c13bffaef79c990e8",
+      "source": "https://media.githubusercontent.com/media/yaoliliu/FreeFuse/f5570195e84d3bc8e7f6702fcb7b012b89372b8e/loras/shalnark_klein_9b.safetensors",
+      "revision": "f5570195e84d3bc8e7f6702fcb7b012b89372b8e"
+    },
+    {
+      "repo": "lsmpp/freefuse_example_loras",
+      "path": "skeletor_zit.safetensors",
+      "size": 170128288,
+      "sha256": "3f4fd93b0e9b01f59a5fe833a8c1ced71eb48ba01316d7c484b459d3806b1c84"
+    },
+    {
+      "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+      "path": "sd_xl_base_1.0.safetensors",
+      "size": 6938078334,
+      "sha256": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b"
+    },
+    {
+      "repo": "Comfy-Org/z_image_turbo",
+      "path": "split_files/vae/ae.safetensors",
+      "size": 335304388,
+      "sha256": "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38"
+    },
+    {
+      "repo": "black-forest-labs/FLUX.2-klein-4b-fp8",
+      "path": "flux-2-klein-4b-fp8.safetensors",
+      "size": 4070624520,
+      "sha256": "97ed34fe0567e436200f2faee3939b88f2b5d99f8af2a4dc16532c4245c0ccb6"
+    },
+    {
+      "repo": "Comfy-Org/z_image_turbo",
+      "path": "split_files/text_encoders/qwen_3_4b.safetensors",
+      "size": 8044982048,
+      "sha256": "6c671498573ac2f7a5501502ccce8d2b08ea6ca2f661c458e708f36b36edfc5a"
+    },
+    {
+      "repo": "Comfy-Org/flux2-dev",
+      "path": "split_files/vae/flux2-vae.safetensors",
+      "size": 336213556,
+      "sha256": "d64f3a68e1cc4f9f4e29b6e0da38a0204fe9a49f2d4053f0ec1fa1ca02f9c4b5"
+    },
+    {
+      "repo": "Comfy-Org/z_image_turbo",
+      "path": "split_files/diffusion_models/z_image_turbo_bf16.safetensors",
+      "size": 12309866400,
+      "sha256": "2407613050b809ffdff18a4ac99af83ea6b95443ecebdf80e064a79c825574a6"
+    },
+    {
+      "repo": "Comfy-Org/flux1-dev",
+      "path": "flux1-dev-fp8.safetensors",
+      "size": 17246524772,
+      "sha256": "8e91b68084b53a7fc44ed2a3756d821e355ac1a7b6fe29be760c1db532f3d88a"
+    },
+    {
+      "repo": "comfyanonymous/flux_text_encoders",
+      "path": "clip_l.safetensors",
+      "size": 246144152,
+      "sha256": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd"
+    },
+    {
+      "repo": "comfyanonymous/flux_text_encoders",
+      "path": "t5xxl_fp8_e4m3fn.safetensors",
+      "size": 4893934904,
+      "sha256": "7d330da4816157540d6bb7838bf63a0f02f573fc48ca4d8de34bb0cbfd514f09"
+    },
+    {
+      "size": 9433061528,
+      "sha256": "865ba09f5b4c3cbd3468a4bd3acb9fcb2f8740c54317482f0bcd4ed1d3655cee",
+      "repo": "black-forest-labs/FLUX.2-klein-9b-fp8",
+      "path": "flux-2-klein-9b-fp8.safetensors"
+    },
+    {
+      "repo": "Comfy-Org/flux2-klein-9B",
+      "path": "split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+      "size": 8664848742,
+      "sha256": "abad16806e0cbabc54e0325d6565847443fe396d5f0be38bb3cd3fe75a1201d6"
+    }
+  ]
+}
