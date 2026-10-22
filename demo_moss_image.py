@@ -5,6 +5,7 @@ from pathlib import Path
 
 import gradio as gr
 import torch
+from PIL import Image
 
 from src.pipeline.freefuse_moss_image_pipeline import FreeFuseMossImagePipeline, find_moss_concept_positions
 
@@ -51,7 +52,7 @@ def main():
                       background_concept=background.strip() or None, generator=noise(), collect_block=int(block),
                       collect_step=int(collect_step), debug_save_path=directory / "routing", **options).images[0]
         result.save(directory / "freefuse.png")
-        masks = [(str(directory / "routing" / f"mask_{i}.png"), name)
+        masks = [(Image.open(directory / "routing" / f"mask_{i}.png").copy(), name)
                  for i, name in enumerate(pipe.last_freefuse_debug["masks"])]
         return baseline, result, masks
     with gr.Blocks(title="FreeFuse · MOSS Image") as demo:
