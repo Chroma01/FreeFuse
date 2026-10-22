@@ -420,7 +420,16 @@ class MultiAdapterBypassForwardHook:
                       'layers.' in key and 
                       ('attention' in key or 'feed_forward' in key))
         
-        if is_sdxl:
+        is_moss_joint = "layers." in key and ".proj." in key and "text_embedder" not in key
+        is_moss_global = any(part in key for part in (
+            "text_embedder", "time_embedding", "shared_block_modulation", "video_head_modulation"))
+        if is_moss_joint:
+            result, mask_type = True, "moss_image_unified"
+        elif "video_embedder" in key or "final_linear_video" in key:
+            result, mask_type = True, "img_only"
+        elif is_moss_global:
+            result, mask_type = False, None
+        elif is_sdxl:
             result, mask_type = self._check_sdxl_layer(key)
         elif is_flux:
             result, mask_type = self._check_flux_layer(key)
@@ -592,6 +601,15 @@ class MultiAdapterBypassForwardHook:
         mask = self.masks[adapter_name]
         mask_type = self._get_mask_type()
         
+        if mask_type == "moss_image_unified":
+            # MOSS is [image,text], including fused-QKV and FFN projections.
+            spatial = mask.reshape(-1).to(device=device, dtype=dtype)
+            if spatial.numel() > seq_len:
+                raise ValueError("MOSS mask has more image tokens than the joint sequence.")
+            full_mask = torch.ones(seq_len, device=device, dtype=dtype)
+            full_mask[:spatial.numel()] = spatial
+            return full_mask
+
         # Determine img_len based on mask_type
         if mask_type == 'img_with_text':
             # Flux single stream: seq_len = txt_len + img_len

@@ -231,6 +231,12 @@ Parameters:
                 lora_masks=lora_masks_flat,
                 token_pos_maps=token_pos_maps,
             )
+        elif model_type == "moss_image":
+            from ..freefuse_core.moss_image_support import apply_moss_bias_patches
+            flat_masks = {name: mask.reshape(1, -1) for name, mask in mask_dict.items()
+                          if not name.startswith("_")}
+            apply_moss_bias_patches(model_clone, flat_masks, token_pos_maps, config, bias_blocks)
+
         elif model_type == "krea2":
             from ..freefuse_core.krea2_support import apply_krea2_bias_patches
 

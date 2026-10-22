@@ -60,12 +60,20 @@ import comfy.sample
 import comfy.model_management
 
 
-MODEL_ORDER = ["flux", "z_image", "klein9b", "klein4b", "sdxl"]
+MODEL_ORDER = ["moss_image", "flux", "z_image", "klein9b", "klein4b", "sdxl"]
 
 KLEIN_NO_THINK_TEMPLATE = "<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n"
 KLEIN_GUIDANCE = None
 
 MODEL_DEFAULTS = {
+    "moss_image": {
+        "steps": 30, "cfg": 3.0, "seed": 42, "sampler": "euler", "scheduler": "simple",
+        "collect_step": 5, "collect_block": 20, "collect_block_end": 20,
+        "collect_region": "output_early ★ (recommended)", "collect_tf_index": 3,
+        "top_k_ratio": 0.1, "temperature": 4000.0, "bias_scale": 4.0,
+        "positive_bias_scale": 2.0, "bias_blocks": "all", "bidirectional": True,
+        "use_morphological_cleaning": True,
+    },
     "flux": {
         "steps": 28,
         "cfg": 1.0,
@@ -462,6 +470,9 @@ def load_sdxl_models():
 
 
 def _find_loras_for_model(model_type: str) -> Tuple[str, str, str, str, float]:
+    if model_type == "moss_image":
+        from moss_image_test_support import moss_lora_config
+        return moss_lora_config()
     lora_list = folder_paths.get_filename_list("loras")
     if model_type == "z_image":
         lora_a = next((l for l in lora_list if "jinx" in l.lower() and "zit" in l.lower()), None)
@@ -512,6 +523,9 @@ def load_loras(model, clip, lora_a, lora_b, adapter_a, adapter_b, strength):
 
 
 def _default_prompt_config(model_type: str) -> Tuple[str, str, Dict[str, str], str, str, str]:
+    if model_type == "moss_image":
+        from moss_image_test_support import moss_prompt_config
+        return moss_prompt_config()
     if model_type == "z_image":
         prompt = (
             "A picture of two characters, a starry night scene with northern lights in background: "
@@ -813,7 +827,11 @@ def run_model_compare(model_type: str, width: int, height: int, out_dir: str) ->
     _reset_comfy_memory(f"before {model_type}")
     defaults = MODEL_DEFAULTS[model_type]
 
-    if model_type == "flux":
+    if model_type == "moss_image":
+        from moss_image_test_support import load_moss_models
+        model, clip, vae = load_moss_models()
+        flux_variant = None
+    elif model_type == "flux":
         model, clip, vae, flux_variant = load_flux_models()
     elif model_type == "klein4b":
         model, clip, vae = load_flux2_klein_models("4b")
@@ -990,7 +1008,7 @@ def main():
     parser.add_argument(
         "--models",
         default="all",
-        help="Comma-separated: flux,klein4b,klein9b,z_image,sdxl or 'all'",
+        help="Comma-separated: moss_image,flux,klein4b,klein9b,z_image,sdxl or 'all'",
     )
     parser.add_argument("--width", type=int, default=1024)
     parser.add_argument("--height", type=int, default=1024)

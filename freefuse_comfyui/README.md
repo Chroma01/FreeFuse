@@ -186,3 +186,14 @@ freefuse_flux_square_1024_output.png. It shows up in the Preview when the workfl
 ## License
 
 Apache 2.0
+
+
+## MOSS Image (experimental)
+
+Native MOSS Image Base/SFT models are supported through the existing FreeFuse
+nodes, including split/fused QKV. Use CLIPLoader type `moss_image`,
+EmptyFlux2LatentImage, the FLUX.2 VAE and MOSS-specific LoRAs.
+Open `workflows/moss_image_freefuse_complete.json`.
+Collection block 20 / step 5 are provisional starting settings.
+See [the full guide](../docs/moss_image.md) for exporting an official Diffusers
+bundle, downloads, comparisons, parameter sweeps and SSH forwarding.

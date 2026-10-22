@@ -1,0 +1,9 @@
+# Optional MOSS backend; use a separate virtual environment.
+torch>=2.9,<3
+diffusers>=0.38,<0.42
+transformers>=5.3,<6
+accelerate>=1.10
+safetensors>=0.6
+Pillow>=10
+# For demo_moss_image.py:
+gradio>=6.30,<7

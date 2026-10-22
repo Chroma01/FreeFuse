@@ -1,0 +1,154 @@
+{
+  "base_model": "OpenMOSS-Team/MOSS-Image-SFT",
+  "base_revision": "f972bd4b4b9e3852133cc5da954d87bc32cd8fb9",
+  "comfyui_revision": "1a82e6d01f395b43275c77acd289af1eb7090bb9",
+  "torch": "2.9.1+cu128",
+  "diffusers": "0.41.0",
+  "transformers": "5.14.1",
+  "gpu": "NVIDIA L20Z",
+  "loras": [
+    {
+      "name": "Tinkerbell_MOSS_v1.safetensors",
+      "creator": "CitronLegacy",
+      "version": 3415091,
+      "sha256": "4d7896f00b4904d38ad43ebdd3b80f7cc7a55bd2da1905e1af4e41c01b991bf0",
+      "matched_linear_targets": 252
+    },
+    {
+      "name": "AlbedoOverlord_MOSS_v1.safetensors",
+      "creator": "CitronLegacy",
+      "version": 3416685,
+      "sha256": "864978d0a9c492ecd6d8ea1f53396b0bd4cc8c0023e487b09c7e7bb2330f6197",
+      "matched_linear_targets": 252
+    }
+  ],
+  "diffusers_block_comparison": {
+    "config": {
+      "model": "OpenMOSS-Team/MOSS-Image-SFT",
+      "prompt": "An anime illustration of two adult characters in a sunny garden: t1nk3r, a blonde fairy with blue eyes, a green dress and translucent wings, on the left; lbd0c1tr0n, a black-haired woman with golden eyes, curved white horns, a white dress and black feathered wings, on the right. Both are smiling and holding flowers, full body.",
+      "subject": [
+        [
+          "tinkerbell",
+          "Tinkerbell_MOSS_v1.safetensors",
+          "t1nk3r"
+        ],
+        [
+          "albedo",
+          "AlbedoOverlord_MOSS_v1.safetensors",
+          "lbd0c1tr0n"
+        ]
+      ],
+      "background_concept": "a sunny garden",
+      "height": 768,
+      "width": 1024,
+      "steps": 30,
+      "guidance": 3.0,
+      "seed": 42,
+      "collect_block": 20,
+      "collect_step": 4,
+      "bias_scale": 4.0,
+      "lora_weight": 1.0,
+      "offload": false,
+      "compare": false,
+      "output_dir": "outputs/moss_blocks",
+      "blocks": "8,14,20,26,32,38"
+    },
+    "results": [
+      {
+        "block": 8,
+        "subject_mask_fraction": {
+          "tinkerbell": 0.5192057490348816,
+          "albedo": 0.4807942807674408
+        }
+      },
+      {
+        "block": 14,
+        "subject_mask_fraction": {
+          "tinkerbell": 0.4889322817325592,
+          "albedo": 0.5110676884651184
+        }
+      },
+      {
+        "block": 20,
+        "subject_mask_fraction": {
+          "tinkerbell": 0.2679036557674408,
+          "albedo": 0.3004557192325592
+        }
+      },
+      {
+        "block": 26,
+        "subject_mask_fraction": {
+          "tinkerbell": 0.2379557341337204,
+          "albedo": 0.26171875
+        }
+      },
+      {
+        "block": 32,
+        "subject_mask_fraction": {
+          "tinkerbell": 0.2281901091337204,
+          "albedo": 0.3245442807674408
+        }
+      },
+      {
+        "block": 38,
+        "subject_mask_fraction": {
+          "tinkerbell": 0.26171875,
+          "albedo": 0.2633463442325592
+        }
+      }
+    ]
+  },
+  "comfy_comparison": {
+    "width": 768,
+    "height": 512,
+    "steps": 30,
+    "cfg": 3.0,
+    "seed": 42,
+    "collect_block": 20,
+    "collect_step_one_based": 5,
+    "success": true
+  },
+  "asset": "assets/moss_image_compare.png",
+  "comfy_parameter_tests": {
+    "aspect": {
+      "passed": 3,
+      "failed": 0,
+      "sizes": [
+        [
+          768,
+          768
+        ],
+        [
+          768,
+          512
+        ],
+        [
+          512,
+          768
+        ]
+      ]
+    },
+    "block": {
+      "passed": 4,
+      "failed": 0,
+      "blocks": [
+        8,
+        20,
+        32,
+        38
+      ]
+    },
+    "bias": {
+      "passed": 2,
+      "failed": 0,
+      "negative_scales": [
+        0.0,
+        4.0
+      ]
+    }
+  },
+  "small_model_tests": {
+    "new_moss_tests": 13,
+    "workflow_integrity_subtests": 17
+  }
+}

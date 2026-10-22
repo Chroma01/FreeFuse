@@ -895,6 +895,11 @@ def apply_attention_bias_patches(
     
     if model_type in ("flux", "flux2"):
         _apply_flux_bias_patches(model_patcher, lora_masks, token_pos_maps, config)
+    elif model_type == "moss_image":
+        from .moss_image_support import apply_moss_bias_patches
+        apply_moss_bias_patches(model_patcher, lora_masks, token_pos_maps, config,
+                               config.apply_to_blocks or "all")
+
     elif model_type == "z_image":
         if lora_masks is None or token_pos_maps is None:
             logging.warning("[FreeFuse] Z-Image attention bias requires lora_masks and token_pos_maps")

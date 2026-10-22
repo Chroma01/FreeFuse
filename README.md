@@ -20,6 +20,7 @@
 - [x] Supports FLUX.2-klein-4B/9B  in diffusers
 - [x] Supports FLUX.2-klein-4B/9B in ComfyUI
 - [x] Supports Krea2 in ComfyUI
+- [x] Experimental MOSS Image Base/SFT support in Diffusers and ComfyUI
 - [x] Support ControlNet+FreeFuse in ComfyUI
 - [ ] Exploring FreeFuse in text2video model
 
@@ -133,6 +134,13 @@ python main_freefuse_sdxl.py
 ``` shell
 python main_freefuse_z_image.py
 ```
+
+### Running on MOSS Image
+
+See [the MOSS Image guide](docs/moss_image.md) for model/LoRA setup,
+same-seed comparisons, block sweeps, the ComfyUI workflow and a loopback web demo.
+
+![MOSS Image baseline and FreeFuse comparison](assets/moss_image_compare.png)
 
 ## Acknowledgement
 
