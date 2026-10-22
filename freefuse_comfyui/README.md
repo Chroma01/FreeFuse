@@ -10,6 +10,7 @@ FreeFuse for ComfyUI: multi-concept LoRA composition with spatial awareness.
 - [workflows/sdxl_freefuse_complete.json](workflows/sdxl_freefuse_complete.json)
 - [workflows/zimage_freefuse_complete.json](workflows/zimage_freefuse_complete.json)
 - [workflows/krea2_freefuse_with_editor.json](workflows/krea2_freefuse_with_editor.json)
+- [workflows/moss_image_freefuse_complete.json](workflows/moss_image_freefuse_complete.json)
 
 ## Installation
 
@@ -195,5 +196,11 @@ nodes, including split/fused QKV. Use CLIPLoader type `moss_image`,
 EmptyFlux2LatentImage, the FLUX.2 VAE and MOSS-specific LoRAs.
 Open `workflows/moss_image_freefuse_complete.json`.
 Collection block 20 / step 5 are provisional starting settings.
-See [the full guide](../docs/moss_image.md) for exporting an official Diffusers
+See [the full guide](https://github.com/yaoliliu/FreeFuse/blob/master/docs/moss_image.md) for exporting an official Diffusers
 bundle, downloads, comparisons, parameter sweeps and SSH forwarding.
+
+### MOSS Image example
+
+The MOSS workflow uses a 1024 × 1024 Tinkerbell / Albedo close portrait, seed 42, 30 steps and CFG 3. Both LoRAs are active in the baseline and FreeFuse images. See the [setup and exact example settings](https://github.com/yaoliliu/FreeFuse/blob/master/docs/moss_image.md).
+
+![MOSS Image comparison](https://raw.githubusercontent.com/yaoliliu/FreeFuse/master/assets/moss_image_compare.png)

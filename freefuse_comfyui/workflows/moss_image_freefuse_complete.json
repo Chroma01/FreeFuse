@@ -292,15 +292,15 @@
       },
       "widgets_values": [
         "tinkerbell",
-        "t1nk3r, a blonde fairy with blue eyes, a green dress and translucent wings",
+        "t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style",
         "albedo",
-        "lbd0c1tr0n, a black-haired woman with golden eyes, curved white horns, a white dress and black feathered wings",
+        "lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style",
         "",
         "",
         "",
         "",
         true,
-        "a sunny garden"
+        "a sunny garden with flowers"
       ]
     },
     {
@@ -337,7 +337,7 @@
         "Run widget replace on values": false
       },
       "widgets_values": [
-        "An anime illustration of two adult characters in a sunny garden: t1nk3r, a blonde fairy with blue eyes, a green dress and translucent wings, on the left; lbd0c1tr0n, a black-haired woman with golden eyes, curved white horns, a white dress and black feathered wings, on the right. Both are smiling and holding flowers, full body."
+        "A close portrait of two adult characters standing shoulder to shoulder in a sunny garden with flowers: t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style on the left, and lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style on the right. Both look at the viewer with a gentle smile, upper bodies, detailed faces."
       ]
     },
     {
@@ -390,7 +390,7 @@
         "Node name for S&R": "FreeFuseTokenPositions"
       },
       "widgets_values": [
-        "An anime illustration of two adult characters in a sunny garden: t1nk3r, a blonde fairy with blue eyes, a green dress and translucent wings, on the left; lbd0c1tr0n, a black-haired woman with golden eyes, curved white horns, a white dress and black feathered wings, on the right. Both are smiling and holding flowers, full body.",
+        "A close portrait of two adult characters standing shoulder to shoulder in a sunny garden with flowers: t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style on the left, and lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style on the right. Both look at the viewer with a gentle smile, upper bodies, detailed faces.",
         true,
         true
       ]
@@ -440,7 +440,7 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "An anime illustration of two adult characters in a sunny garden: t1nk3r, a blonde fairy with blue eyes, a green dress and translucent wings, on the left; lbd0c1tr0n, a black-haired woman with golden eyes, curved white horns, a white dress and black feathered wings, on the right. Both are smiling and holding flowers, full body."
+        "A close portrait of two adult characters standing shoulder to shoulder in a sunny garden with flowers: t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style on the left, and lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style on the right. Both look at the viewer with a gentle smile, upper bodies, detailed faces."
       ]
     },
     {
@@ -885,7 +885,7 @@
         20,
         "output_early ★ (recommended)",
         3,
-        0,
+        4000,
         0.1,
         true,
         0.95,

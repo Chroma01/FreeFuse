@@ -165,3 +165,9 @@ suite passed three aspect ratios, four collection blocks and two bias settings.
 The illustrated result uses seed 42 and 30 steps; it is a qualitative example,
 not a multi-seed identity benchmark. See [the portable validation record](moss_image_validation.json)
 for versions, checksums and routing parameters.
+
+## Selected 1024 × 1024 example
+
+The README and combined comparison use the close portrait selected from three fixed-seed prompt variants. Each side is generated at 1024 × 1024 with seed 42, 30 steps and CFG 3; only FreeFuse is toggled. The provided ComfyUI workflow and native comparison fixture use this exact prompt and concept map. [All candidate prompts, parameters and output hashes](moss_image_square_examples.json).
+
+![Selected MOSS Image square comparison](../assets/moss_image_compare.png)

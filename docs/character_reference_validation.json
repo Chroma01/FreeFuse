@@ -131,7 +131,7 @@
     {
       "model": "z_image",
       "character": "skeleton",
-      "prompt": "A picture of one character, Skeletor in purple hooded cloak flexing muscular blue arms triumphantly, skull face grinning menacingly, cartoon animation style, Masters of the Universe character, vibrant purple and blue color scheme, a starry night scene with northern lights.",
+      "prompt": "A picture of one character, Skeletor in purple hooded cloak flexing muscular blue arms triumphantly, skull face grinning menacingly, cartoon animation style, vibrant purple and blue color scheme, a starry night scene with northern lights. The character stands in an uninterrupted landscape extending to every edge of the image. Full character illustration without lettering, captions or logos.",
       "negative_prompt": "",
       "seed": 42,
       "steps": 12,
@@ -153,7 +153,7 @@
       },
       "output": "z_image/skeleton.png",
       "freefuse": false,
-      "image_sha256": "1852720830fb0393616061124fb91217e7ed37e4bbba72f9043bb69c4d280d98"
+      "image_sha256": "6a818a3541b21ee7b6ef4f94131da0a84269acc133f6b1f88926d45bf2284107"
     },
     {
       "model": "flux",
@@ -399,5 +399,56 @@
       "size": 8664848742,
       "sha256": "abad16806e0cbabc54e0325d6565847443fe396d5f0be38bb3cd3fe75a1201d6"
     }
-  ]
+  ],
+  "displayed_model_order": [
+    "flux",
+    "z_image",
+    "klein9b",
+    "klein4b",
+    "sdxl",
+    "moss_image"
+  ],
+  "moss_image": {
+    "reference_config": "moss_image_single_references.json",
+    "comparison_config": {
+      "steps": 30,
+      "cfg": 3.0,
+      "seed": 42,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "collect_step": 5,
+      "collect_block": 20,
+      "collect_block_end": 20,
+      "collect_region": "output_early \u2605 (recommended)",
+      "collect_tf_index": 3,
+      "top_k_ratio": 0.1,
+      "temperature": 4000.0,
+      "bias_scale": 4.0,
+      "positive_bias_scale": 2.0,
+      "bias_blocks": "all",
+      "bidirectional": true,
+      "use_morphological_cleaning": true,
+      "width": 1024,
+      "height": 1024,
+      "case": "close_portrait",
+      "prompt": "A close portrait of two adult characters standing shoulder to shoulder in a sunny garden with flowers: t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style on the left, and lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style on the right. Both look at the viewer with a gentle smile, upper bodies, detailed faces.",
+      "concepts": {
+        "tinkerbell": "t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style",
+        "albedo": "lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style"
+      },
+      "source_image_sha256": {
+        "baseline.png": "66e75b56d1a3909210df42a0fd4ce2fe3ac83db5d5e5ff749e208381a0677d67",
+        "freefuse.png": "0bf93477acf661a7715fa9147737f5aa7f5e91a727840bde0fc7c4e2c2f34e29"
+      },
+      "candidate_manifest": "moss_image_square_examples.json",
+      "success": true
+    },
+    "model_validation": "moss_image_validation.json",
+    "prompt": "A close portrait of two adult characters standing shoulder to shoulder in a sunny garden with flowers: t1nk3r, Tinkerbell, a blonde adult fairy with blue eyes, hair in a high bun, a short green dress and translucent fairy wings, in classic Disney animation style on the left, and lbd0c1tr0n, Albedo from Overlord, a black-haired adult woman with golden eyes, curved white horns, a long white dress with gold ornaments and black feathered wings, in Japanese anime style on the right. Both look at the viewer with a gentle smile, upper bodies, detailed faces.",
+    "source_image_sha256": {
+      "baseline.png": "66e75b56d1a3909210df42a0fd4ce2fe3ac83db5d5e5ff749e208381a0677d67",
+      "freefuse.png": "0bf93477acf661a7715fa9147737f5aa7f5e91a727840bde0fc7c4e2c2f34e29"
+    },
+    "display": "Native 1024x1024 images, no crop, resize or retouch"
+  }
 }
