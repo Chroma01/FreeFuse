@@ -1,3 +1,8 @@
+# Unreleased
+
+- Add native Anima Base v1.0 composition with T5-aligned collection, float32 similarity maps, spatial LoRA routing and image-to-text attention bias.
+- Add an Anima workflow, reproducible 1024 × 1024 comparisons and isolated character references.
+
 # 1.1.0
 
 - Add experimental native MOSS Image Base/SFT support, including split and fused QKV checkpoints.

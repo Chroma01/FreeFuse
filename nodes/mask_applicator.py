@@ -309,6 +309,11 @@ When enabled, constructs soft attention bias to guide cross-attention:
                   f"(bias_scale={bias_scale}, positive_scale={positive_bias_scale}, "
                   f"bidirectional={bidirectional}, img_seq={img_seq_len}, cap_seq={cap_seq_len})")
 
+        elif model_type == "anima":
+            from ..freefuse_core.anima_support import apply_anima_bias_patches
+            subject_masks = {name: mask for name, mask in mask_dict.items() if not name.startswith("_")}
+            apply_anima_bias_patches(model_patcher, subject_masks, token_pos_maps, config, bias_blocks)
+
         elif model_type == "moss_image":
             from ..freefuse_core.moss_image_support import apply_moss_bias_patches
             flat_masks = {name: mask.reshape(1, -1) for name, mask in mask_dict.items()
@@ -412,7 +417,7 @@ When enabled, constructs soft attention bias to guide cross-attention:
             samples = latent["samples"]
             # Note: For Flux, this is the unpacked latent size (H/8, W/8)
             # The caller should be aware that this may differ from packed mask size
-            return (samples.shape[2], samples.shape[3])
+            return (samples.shape[-2], samples.shape[-1])
         
         return None
     

@@ -895,6 +895,13 @@ def apply_attention_bias_patches(
     
     if model_type in ("flux", "flux2"):
         _apply_flux_bias_patches(model_patcher, lora_masks, token_pos_maps, config)
+    elif model_type == "anima":
+        from .anima_support import apply_anima_bias_patches
+        # This generic entry point receives flattened masks.
+        if latent_size is None:
+            raise ValueError("Anima attention bias requires its spatial mask dimensions.")
+        spatial = {name: mask.reshape(*latent_size) for name, mask in lora_masks.items()}
+        apply_anima_bias_patches(model_patcher, spatial, token_pos_maps, config, config.apply_to_blocks or "all")
     elif model_type == "moss_image":
         from .moss_image_support import apply_moss_bias_patches
         apply_moss_bias_patches(model_patcher, lora_masks, token_pos_maps, config,

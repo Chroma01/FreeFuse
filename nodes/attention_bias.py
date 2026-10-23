@@ -231,6 +231,11 @@ Parameters:
                 lora_masks=lora_masks_flat,
                 token_pos_maps=token_pos_maps,
             )
+        elif model_type == "anima":
+            from ..freefuse_core.anima_support import apply_anima_bias_patches
+            subject_masks = {name: mask for name, mask in mask_dict.items() if not name.startswith("_")}
+            apply_anima_bias_patches(model_clone, subject_masks, token_pos_maps, config, bias_blocks)
+
         elif model_type == "moss_image":
             from ..freefuse_core.moss_image_support import apply_moss_bias_patches
             flat_masks = {name: mask.reshape(1, -1) for name, mask in mask_dict.items()
@@ -299,7 +304,7 @@ Parameters:
         # Fallback to latent if no masks available
         if latent is not None and "samples" in latent:
             samples = latent["samples"]
-            return (samples.shape[2], samples.shape[3])
+            return (samples.shape[-2], samples.shape[-1])
         
         return None
     

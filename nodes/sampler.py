@@ -225,7 +225,7 @@ for Phase 2 generation with the same seed and steps."""
                   "Connect FreeFuseTokenPositions node before this sampler.")
             # Create fallback uniform masks
             latent_image = latent["samples"]
-            latent_h, latent_w = latent_image.shape[2], latent_image.shape[3]
+            latent_h, latent_w = latent_image.shape[-2], latent_image.shape[-1]
             img_h, img_w = self._latent_to_image_size(model, latent_h, latent_w)
             
             masks = {name: torch.ones(latent_h, latent_w) for name in concepts}
@@ -276,6 +276,8 @@ for Phase 2 generation with the same seed and steps."""
                 auto_temperature = 4000.0   # matches reference FreeFuseZImageAttnProcessor
             elif patch_model_type in ("flux", "flux2"):
                 auto_temperature = 4000.0
+            elif patch_model_type == "anima":
+                auto_temperature = 1.0
             elif patch_model_type in ("krea2", "moss_image"):
                 auto_temperature = 4000.0   # single-stream, RoPE+QK-norm attn like Z-Image; tune later
             else:
@@ -307,7 +309,7 @@ for Phase 2 generation with the same seed and steps."""
             sdxl_collect_blocks = [(block_name, block_num, tf_idx)]
             print(f"[FreeFuse] SDXL collect block: ({block_name}, {block_num}, {tf_idx}) "
                   f"from region='{collect_region}'")
-        elif patch_model_type in ("flux", "flux2", "z_image", "krea2", "moss_image"):
+        elif patch_model_type in ("flux", "flux2", "z_image", "krea2", "moss_image", "anima"):
             range_start = int(collect_block)
             range_end = int(collect_block_end)
             if range_end < range_start:
@@ -339,7 +341,12 @@ for Phase 2 generation with the same seed and steps."""
             )
             
         krea2_replacer = None
-        if patch_model_type == "moss_image":
+        if patch_model_type == "anima":
+            from ..freefuse_core.anima_support import apply_anima_collect_patches
+            if latent["samples"].ndim != 5 or latent["samples"].shape[0] != 1 or latent["samples"].shape[2] != 1:
+                raise ValueError("Anima FreeFuse requires a single still-image latent [1,C,1,H,W]; use EmptyCosmosLatentVideo with length=1.")
+            apply_anima_collect_patches(model_clone, freefuse_state, range_collect_blocks)
+        elif patch_model_type == "moss_image":
             from ..freefuse_core.moss_image_support import apply_moss_collect_patches
             apply_moss_collect_patches(model_clone, freefuse_state, range_collect_blocks)
         elif patch_model_type == "krea2":
@@ -362,7 +369,7 @@ for Phase 2 generation with the same seed and steps."""
         batch_size = latent_image.shape[0]
         
         # Calculate image dimensions
-        latent_h, latent_w = latent_image.shape[2], latent_image.shape[3]
+        latent_h, latent_w = latent_image.shape[-2], latent_image.shape[-1]
         img_h, img_w = self._latent_to_image_size(model_clone, latent_h, latent_w)
 
         # For Flux2 single-stream extraction, cache img sequence length for txt_len resolution.
@@ -497,7 +504,7 @@ for Phase 2 generation with the same seed and steps."""
             # Re-enable LoRA before returning on error (if it was disabled)
             if bypass_manager is not None and disable_lora_phase1:
                 bypass_manager.enable_lora()
-            if patch_model_type in ("krea2", "moss_image"):
+            if patch_model_type in ("krea2", "moss_image", "anima"):
                 raise RuntimeError(
                     f"[FreeFuse {patch_model_type}] Phase 1 failed before collecting valid masks"
                 ) from e
@@ -506,6 +513,9 @@ for Phase 2 generation with the same seed and steps."""
             preview = self._create_preview(empty_masks, img_w, img_h)
             return (model_clone, {"masks": empty_masks}, preview)
         finally:
+            if patch_model_type == "anima" and bypass_manager is not None and disable_lora_phase1:
+                # Postprocessing errors must also leave shared LoRA adapters enabled.
+                bypass_manager.enable_lora()
             # Krea2 uses raw torch hooks (no ComfyUI patch-dict lifecycle), so they
             # must be removed explicitly or they accumulate on the shared module
             # across repeated Phase-1 runs.
@@ -639,7 +649,7 @@ for Phase 2 generation with the same seed and steps."""
                 anisotropy=anisotropy,
             )
         else:
-            if patch_model_type in ("krea2", "moss_image"):
+            if patch_model_type in ("krea2", "moss_image", "anima"):
                 raise RuntimeError(
                     f"[FreeFuse {patch_model_type}] Phase 1 produced no similarity maps; "
                     "refusing to create uniform masks."
@@ -651,6 +661,14 @@ for Phase 2 generation with the same seed and steps."""
                 masks[name] = torch.ones(latent_h, latent_w, device=latent_image.device)
             if include_background:
                 masks["_background_"] = torch.zeros(latent_h, latent_w, device=latent_image.device)
+
+        if patch_model_type == "anima":
+            empty_subjects = [name for name in concepts if name not in masks or not masks[name].bool().any()]
+            if empty_subjects:
+                raise RuntimeError(
+                    f"Anima collected empty character masks: {empty_subjects}. "
+                    "Try temperature=0 (automatic) and another collection block/step."
+                )
 
         # Optional debug dump for masks
         if os.environ.get("FREEFUSE_DEBUG_ZIMAGE") == "1" and patch_model_type == "z_image":

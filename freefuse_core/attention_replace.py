@@ -1778,6 +1778,11 @@ def apply_freefuse_replace_patches(
     
     logging.info(f"[FreeFuse] Applying AGGRESSIVE replace patches for {model_type} model")
     
+    if model_type == "anima":
+        from .anima_support import apply_anima_collect_patches
+        end = max(state.collect_block, state.collect_block_end)
+        apply_anima_collect_patches(model, state, list(range(state.collect_block, end + 1)))
+        return
     if model_type == "moss_image":
         from .moss_image_support import apply_moss_collect_patches
         end = max(state.collect_block, state.collect_block_end)

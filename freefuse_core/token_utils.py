@@ -137,6 +137,8 @@ def detect_model_type_from_model(model) -> str:
         return "unknown"
 
     model_cls = core_model.__class__.__name__.lower()
+    if model_cls == "anima":
+        return "anima"
     if "moss" in model_cls:
         return "moss_image"
     if "krea2" in model_cls or "krea" in model_cls:
@@ -152,6 +154,8 @@ def detect_model_type_from_model(model) -> str:
     dm = getattr(core_model, "diffusion_model", None)
     if dm is not None:
         dm_cls = dm.__class__.__name__.lower()
+        if dm_cls == "anima" or hasattr(dm, "llm_adapter"):
+            return "anima"
         if "moss" in dm_cls:
             return "moss_image"
         if "krea2" in dm_cls or "krea" in dm_cls:
@@ -179,6 +183,8 @@ def detect_model_type_from_model(model) -> str:
     unet_cfg = getattr(model_cfg, "unet_config", None)
     if isinstance(unet_cfg, dict):
         image_model = str(unet_cfg.get("image_model", "")).lower()
+        if image_model == "anima":
+            return "anima"
         if image_model in {"moss_image", "mossimage"}:
             return "moss_image"
         if image_model == "krea2":
@@ -243,6 +249,8 @@ def detect_model_type(clip=None, model=None, model_type_hint: Optional[str] = No
     # Qwen3-VL (attribute name "qwen3vl_4b") is Krea2-specific in this ecosystem
     # so far - check before the generic qwen3 fallback below.
     tokenizer_attr_names = set(vars(tokenizer).keys())
+    if "qwen3_06b" in tokenizer_attr_names and "t5xxl" in tokenizer_attr_names:
+        return "anima"
     if "qwen35_9b" in tokenizer_attr_names:
         return "moss_image"
     if (
@@ -360,7 +368,7 @@ def get_tokenizer_for_model(clip, model_type: str = None):
                 f"(tokenizer_class='{tokenizer.__class__.__name__}', attrs={available_attrs})."
             )
 
-    if model_type == "flux":
+    if model_type in ("flux", "anima"):
         if hasattr(tokenizer, "t5xxl"):
             resolved = _extract_nested_tokenizer(tokenizer.t5xxl)
             if resolved is not None:
@@ -1009,6 +1017,62 @@ def find_concept_positions_krea2(
     return concept_pos_map
 
 
+def find_concept_positions_anima(clip, tokenizer, prompts, concepts,
+                                 filter_meaningless=True, filter_single_char=True):
+    """Map the actual first T5 token chunk used by Anima's LLM adapter.
+
+    ComfyUI strips emphasis syntax before tokenization. Native SentencePiece
+    pieces retain token positions across weighted spans without retokenizing.
+    """
+    if isinstance(prompts, str):
+        prompts = [prompts]
+    result = {name: [] for name in concepts}
+    for prompt in prompts:
+        chunks = clip.tokenize(prompt)["t5xxl"]
+        if len(chunks) != 1:
+            raise ValueError("Anima FreeFuse requires a single native T5 token chunk.")
+        ids = [item[0] for item in chunks[0]]
+        # ComfyUI tokenizes weighted spans separately, so decode/retokenize
+        # need not be a bijection. SentencePiece pieces retain exact native
+        # indices even at those span boundaries.
+        pieces = tokenizer.convert_ids_to_tokens(ids)
+        text = ""
+        offsets = []
+        for token_id, piece in zip(ids, pieces):
+            value = "" if token_id in tokenizer.all_special_ids else piece.replace("▁", " ")
+            offsets.append((len(text), len(text) + len(value)))
+            text += value
+        for name, concept in concepts.items():
+            concept_ids = tokenizer(concept, add_special_tokens=False)["input_ids"]
+            if tokenizer.unk_token_id in concept_ids:
+                raise ValueError(f"Anima concept {name!r} contains unsupported T5 characters.")
+            canonical = "".join(piece.replace("▁", " ") for piece in
+                                tokenizer.convert_ids_to_tokens(concept_ids)).strip()
+            if not canonical:
+                raise ValueError(f"Anima concept {name!r} has no identifiable T5 tokens.")
+            positions = set()
+            start = 0
+            while True:
+                start = text.find(canonical, start)
+                if start < 0:
+                    break
+                end = start + len(canonical)
+                if ((canonical[0].isalnum() and start > 0 and text[start-1].isalnum())
+                        or (canonical[-1].isalnum() and end < len(text) and text[end].isalnum())):
+                    start += 1
+                    continue
+                positions.update(i for i, (a, b) in enumerate(offsets)
+                                 if b > start and a < end and ids[i] not in tokenizer.all_special_ids)
+                start += 1
+            selected = sorted(positions)
+            if filter_meaningless and selected:
+                filtered = [i for i in selected if not is_meaningless_token(
+                    tokenizer.decode([ids[i]]), check_single_char=filter_single_char)]
+                selected = filtered or selected[:1]
+            result[name].append(selected)
+    return result
+
+
 def find_concept_positions(
     clip,
     prompts: Union[str, List[str]],
@@ -1055,6 +1119,8 @@ def find_concept_positions(
     
     tokenizer = get_tokenizer_for_model(clip, model_type)
 
+    if model_type == "anima":
+        return find_concept_positions_anima(clip, tokenizer, prompts, concepts, filter_meaningless, filter_single_char)
     if model_type == "moss_image":
         return find_concept_positions_moss(
             clip, tokenizer, prompts, concepts, filter_meaningless, filter_single_char)
@@ -1088,7 +1154,7 @@ def find_concept_positions(
     else:
         raise ValueError(
             f"Unsupported model type: {model_type}. "
-            "Use 'flux', 'flux2', 'sdxl', 'z_image', 'qwen3', 'krea2', or 'sd1'."
+            "Use 'flux', 'flux2', 'sdxl', 'z_image', 'qwen3', 'krea2', 'moss_image', 'anima', or 'sd1'."
         )
 
 

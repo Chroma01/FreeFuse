@@ -11,6 +11,7 @@ FreeFuse for ComfyUI: multi-concept LoRA composition with spatial awareness.
 - [workflows/zimage_freefuse_complete.json](workflows/zimage_freefuse_complete.json)
 - [workflows/krea2_freefuse_with_editor.json](workflows/krea2_freefuse_with_editor.json)
 - [workflows/moss_image_freefuse_complete.json](workflows/moss_image_freefuse_complete.json)
+- [workflows/anima_freefuse_complete.json](workflows/anima_freefuse_complete.json)
 
 ## Installation
 
@@ -204,3 +205,14 @@ bundle, downloads, comparisons, parameter sweeps and SSH forwarding.
 The MOSS workflow uses a 1024 × 1024 Tinkerbell / Albedo close portrait, seed 42, 30 steps and CFG 3. Both LoRAs are active in the baseline and FreeFuse images. See the [setup and exact example settings](https://github.com/yaoliliu/FreeFuse/blob/master/docs/moss_image.md).
 
 ![MOSS Image comparison](https://raw.githubusercontent.com/yaoliliu/FreeFuse/master/assets/moss_image_compare.png)
+
+## Anima
+
+Native Anima Base v1.0 works with the existing FreeFuse nodes. Open
+[anima_freefuse_complete.json](workflows/anima_freefuse_complete.json).
+Use Qwen-3 0.6B with CLIPLoader type stable_diffusion (auto-detected as Anima),
+qwen_image_vae.safetensors and EmptyCosmosLatentVideo with length 1, batch size 1.
+Use Anima-specific LoRAs; collection temperature 0 selects the Anima default 1.0.
+See the [setup, example and limits](https://github.com/yaoliliu/FreeFuse/blob/master/docs/anima.md).
+
+![Anima comparison](https://raw.githubusercontent.com/yaoliliu/FreeFuse/master/assets/anima_compare.png)
