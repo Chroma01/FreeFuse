@@ -423,7 +423,7 @@ class MultiAdapterBypassForwardHook:
         is_moss_joint = "layers." in key and ".proj." in key and "text_embedder" not in key
         is_moss_global = any(part in key for part in (
             "text_embedder", "time_embedding", "shared_block_modulation", "video_head_modulation"))
-        is_anima_block = "blocks." in key and any(part in key for part in (
+        is_anima_block = (".blocks." in key or key.startswith("blocks.")) and any(part in key for part in (
             ".self_attn.", ".cross_attn.", ".mlp.", ".adaln_modulation_"))
         if "llm_adapter." in key or "t_embedder." in key:
             result, mask_type = False, None
