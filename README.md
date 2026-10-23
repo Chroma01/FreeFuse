@@ -135,17 +135,6 @@ python main_freefuse_sdxl.py
 python main_freefuse_z_image.py
 ```
 
-### Running on MOSS Image
-
-See [the MOSS Image guide](docs/moss_image.md) for model/LoRA setup,
-same-seed comparisons, block sweeps, the ComfyUI workflow and a loopback web demo.
-
-Single-LoRA reference generations, with FreeFuse disabled: Tinkerbell (left) and Albedo (right).
-
-![MOSS character references](assets/moss_image_character_references.png)
-
-![MOSS Image baseline and FreeFuse comparison](assets/moss_image_compare.png)
-
 ## Acknowledgement
 
 Thanks for [Tekemo](https://civarchive.com/users/Tekemo) and [jrewingwannabe947](https://civitai.com/user/jrewingwannabe947)'s ZIT LoRAs, which are used in our Z-Image-turbo examples.
