@@ -35,19 +35,31 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
-          import json, os, re, tomllib, urllib.request
+          import json, os, re, tomllib, urllib.request, urllib.error
           from pathlib import Path
           config = tomllib.loads(Path("pyproject.toml").read_text())
           version = config["project"]["version"]
           if not re.fullmatch(r"\d+\.\d+\.\d+", version):
               raise ValueError("Release version must use major.minor.patch")
-          with urllib.request.urlopen("https://api.comfy.org/nodes/freefuse", timeout=30) as response:
-              latest = json.load(response).get("latest_version") or {}
-          already_published = latest.get("version") == version
+          node_id = config["project"]["name"]
+          # Pending versions may not appear in the cached node/latest listing.
+          # A version is immutable once uploaded, regardless of its scan status.
+          request = urllib.request.Request(
+              f"https://api.comfy.org/nodes/{node_id}/versions/{version}",
+              headers={"Cache-Control": "no-cache"},
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  existing = json.load(response)
+              already_published = existing.get("version") == version
+          except urllib.error.HTTPError as error:
+              if error.code != 404:
+                  raise
+              already_published = False
           with open(os.environ["GITHUB_OUTPUT"], "a") as output:
               output.write(f"version={version}\n")
               output.write(f"publish={'false' if already_published else 'true'}\n")
-          print(f"FreeFuse {version}: " + ("already published" if already_published else "ready to publish"))
+          print(f"FreeFuse {version}: " + ("already uploaded; keeping its Registry scan status" if already_published else "ready to publish"))
           PY
       - name: Install and validate publishing tool
         if: steps.version.outputs.publish == 'true'
