@@ -1,7 +1,10 @@
-# Unreleased
+# 1.2.0
 
 - Add native Anima Base v1.0 composition with T5-aligned collection, float32 similarity maps, spatial LoRA routing and image-to-text attention bias.
 - Add an Anima workflow, reproducible 1024 × 1024 comparisons and isolated character references.
+
+- Keep developer API clients out of the Registry package; runtime debug messages use standard logging.
+- Remove the legacy adapter precision override and implicit debug tensor dumps; FP8/GGUF adapters retain floating precision.
 
 # 1.1.0
 

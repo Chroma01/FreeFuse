@@ -9,8 +9,6 @@ Uses ComfyUI's replace patch mechanism to intercept attention internals.
 
 import torch
 import torch.nn.functional as F
-import os
-import json
 import comfy.samplers
 import comfy.sample
 
@@ -593,30 +591,6 @@ for Phase 2 generation with the same seed and steps."""
                     f"(model={patch_model_type})."
                 )
 
-        # Optional debug dump for Z-Image
-        if os.environ.get("FREEFUSE_DEBUG_ZIMAGE") == "1" and patch_model_type == "z_image":
-            debug_dir = os.path.join(os.getcwd(), "debug_z_image_comfyui")
-            os.makedirs(debug_dir, exist_ok=True)
-            try:
-                # Save token positions + concepts
-                debug_meta = {
-                    "concepts": concepts,
-                    "token_pos_maps": token_pos_maps,
-                    "collect_block": collect_block,
-                    "collect_block_end": collect_block_end,
-                    "collect_step": collect_step,
-                    "top_k_ratio": top_k_ratio,
-                    "temperature": auto_temperature,
-                }
-                with open(os.path.join(debug_dir, "phase1_meta.json"), "w", encoding="utf-8") as f:
-                    json.dump(debug_meta, f, ensure_ascii=False, indent=2)
-                # Save similarity maps
-                if similarity_maps:
-                    sim_cpu = {k: v.detach().cpu() for k, v in similarity_maps.items()}
-                    torch.save(sim_cpu, os.path.join(debug_dir, "similarity_maps.pt"))
-            except Exception as e:
-                print(f"[FreeFuse Z-Image Debug] Failed to save debug artifacts: {e}")
-        
         # Debug: Show raw similarity maps
         print(f"[FreeFuse] Raw similarity maps: {list(similarity_maps.keys())}")
         for name, sim_map in similarity_maps.items():
@@ -670,16 +644,6 @@ for Phase 2 generation with the same seed and steps."""
                     "Try temperature=0 (automatic) and another collection block/step."
                 )
 
-        # Optional debug dump for masks
-        if os.environ.get("FREEFUSE_DEBUG_ZIMAGE") == "1" and patch_model_type == "z_image":
-            try:
-                debug_dir = os.path.join(os.getcwd(), "debug_z_image_comfyui")
-                os.makedirs(debug_dir, exist_ok=True)
-                mask_cpu = {k: v.detach().cpu() for k, v in masks.items()}
-                torch.save(mask_cpu, os.path.join(debug_dir, "masks.pt"))
-            except Exception as e:
-                print(f"[FreeFuse Z-Image Debug] Failed to save masks: {e}")
-        
         # Create preview image
         preview = self._create_preview(masks, img_w, img_h)
         
