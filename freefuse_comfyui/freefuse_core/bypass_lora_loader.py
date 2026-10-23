@@ -423,7 +423,15 @@ class MultiAdapterBypassForwardHook:
         is_moss_joint = "layers." in key and ".proj." in key and "text_embedder" not in key
         is_moss_global = any(part in key for part in (
             "text_embedder", "time_embedding", "shared_block_modulation", "video_head_modulation"))
-        if is_moss_joint:
+        is_anima_block = "blocks." in key and any(part in key for part in (
+            ".self_attn.", ".cross_attn.", ".mlp.", ".adaln_modulation_"))
+        if "llm_adapter." in key or "t_embedder." in key:
+            result, mask_type = False, None
+        elif is_anima_block:
+            is_text = ".cross_attn.k_proj" in key or ".cross_attn.v_proj" in key
+            is_global = ".adaln_modulation_" in key
+            result, mask_type = (False, None) if is_text or is_global else (True, "img_only")
+        elif is_moss_joint:
             result, mask_type = True, "moss_image_unified"
         elif "video_embedder" in key or "final_linear_video" in key:
             result, mask_type = True, "img_only"
@@ -759,6 +767,9 @@ class MultiAdapterBypassForwardHook:
         if base_out.dim() == 3:
             # Transformer-style: (B, seq_len, hidden)
             seq_len = base_out.shape[1]
+        elif base_out.dim() == 5 and self._get_mask_type() == "img_only":
+            # Anima MLPs retain [B,T,H,W,D] instead of flattening image tokens.
+            seq_len = base_out.shape[1] * base_out.shape[2] * base_out.shape[3]
         elif base_out.dim() == 4:
             # Conv-style: (B, C, H, W)
             seq_len = base_out.shape[2] * base_out.shape[3]
@@ -812,6 +823,8 @@ class MultiAdapterBypassForwardHook:
                         # Expand mask to match: (1, seq_len, 1)
                         mask_expanded = mask.view(1, -1, 1)
                         h_out = h_out * mask_expanded
+                    elif h_out.dim() == 5:
+                        h_out = h_out * mask.reshape(1, *h_out.shape[1:4], 1)
                     elif h_out.dim() == 4:
                         # Conv: (B, C, H, W), mask needs to be (1, 1, H, W)
                         h_w = h_out.shape[3]

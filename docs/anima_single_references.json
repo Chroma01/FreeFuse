@@ -1,0 +1,57 @@
+{
+  "reference_type": "single LoRA generation, FreeFuse disabled",
+  "runs": [
+    {
+      "model": "anima",
+      "character": "starfire",
+      "prompt": "A picture of one character, strfr, Starfire, green eyes, green sclera, long red hair, purple crop top, purple skirt, silver gorget, cartoon style, a sunny garden with flowers.",
+      "negative_prompt": "worst quality, low quality, bad anatomy, text, watermark",
+      "seed": 42,
+      "steps": 30,
+      "cfg": 4.5,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "StarfireTT_ANIMAv1_v3.safetensors",
+      "lora_sha256": "b9c8dddbbd15ca1e41186a850d0c732ef77740672ed719a1a5ee7cedb69c65aa",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "anima-base-v1.0.safetensors",
+        "text_encoders": [
+          "qwen_3_06b_base.safetensors"
+        ],
+        "vae": "qwen_image_vae.safetensors"
+      },
+      "output": "assets/anima_character_references.png (starfire)",
+      "freefuse": false
+    },
+    {
+      "model": "anima",
+      "character": "albedo",
+      "prompt": "A picture of one character, lbd0c1tr0n, Albedo, yellow eyes, slit pupils, long black hair, white horns, white dress, gold ornaments, black feathered wings, anime style, a sunny garden with flowers.",
+      "negative_prompt": "worst quality, low quality, bad anatomy, text, watermark",
+      "seed": 42,
+      "steps": 30,
+      "cfg": 4.5,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "width": 1024,
+      "height": 1024,
+      "lora": "AlbedoOverlord_ANIMAv1_v1.safetensors",
+      "lora_sha256": "cd062172bb9146c3ff96b10826691bf2ec4a0c133186cf1b46483547981f960f",
+      "strength_model": 1.0,
+      "strength_clip": 1.0,
+      "model_files": {
+        "diffusion_model": "anima-base-v1.0.safetensors",
+        "text_encoders": [
+          "qwen_3_06b_base.safetensors"
+        ],
+        "vae": "qwen_image_vae.safetensors"
+      },
+      "output": "assets/anima_character_references.png (albedo)",
+      "freefuse": false
+    }
+  ]
+}

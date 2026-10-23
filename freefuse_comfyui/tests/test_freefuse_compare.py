@@ -60,12 +60,20 @@ import comfy.sample
 import comfy.model_management
 
 
-MODEL_ORDER = ["moss_image", "flux", "z_image", "klein9b", "klein4b", "sdxl"]
+MODEL_ORDER = ["anima", "moss_image", "flux", "z_image", "klein9b", "klein4b", "sdxl"]
 
 KLEIN_NO_THINK_TEMPLATE = "<|im_start|>user\n{}<|im_end|>\n<|im_start|>assistant\n"
 KLEIN_GUIDANCE = None
 
 MODEL_DEFAULTS = {
+    "anima": {
+        "steps": 30, "cfg": 4.5, "seed": 42, "sampler": "euler", "scheduler": "simple",
+        "collect_step": 5, "collect_block": 12, "collect_block_end": 12,
+        "collect_region": "output_early ★ (recommended)", "collect_tf_index": 3,
+        "top_k_ratio": 0.1, "temperature": 1.0, "bias_scale": 4.0,
+        "positive_bias_scale": 2.0, "bias_blocks": "all", "bidirectional": False,
+        "use_morphological_cleaning": True,
+    },
     "moss_image": {
         "steps": 30, "cfg": 3.0, "seed": 42, "sampler": "euler", "scheduler": "simple",
         "collect_step": 5, "collect_block": 20, "collect_block_end": 20,
@@ -470,6 +478,9 @@ def load_sdxl_models():
 
 
 def _find_loras_for_model(model_type: str) -> Tuple[str, str, str, str, float]:
+    if model_type == "anima":
+        from anima_test_support import anima_lora_config
+        return anima_lora_config()
     if model_type == "moss_image":
         from moss_image_test_support import moss_lora_config
         return moss_lora_config()
@@ -523,6 +534,9 @@ def load_loras(model, clip, lora_a, lora_b, adapter_a, adapter_b, strength):
 
 
 def _default_prompt_config(model_type: str) -> Tuple[str, str, Dict[str, str], str, str, str]:
+    if model_type == "anima":
+        from anima_test_support import anima_prompt_config
+        return anima_prompt_config()
     if model_type == "moss_image":
         from moss_image_test_support import moss_prompt_config
         return moss_prompt_config()
@@ -653,7 +667,10 @@ def setup_concepts_and_conditioning(
         freefuse_data["model_type"] = "flux2"
         freefuse_data["flux_variant"] = "flux2"
 
-    if model_type == "z_image":
+    if model_type == "anima":
+        conditioning = clip.encode_from_tokens_scheduled(clip.tokenize(prompt))
+        neg_conditioning = clip.encode_from_tokens_scheduled(clip.tokenize(negative_prompt))
+    elif model_type == "z_image":
         system_prompt = (
             "You are an assistant designed to generate superior images with the superior "
             "degree of image-text alignment based on textual prompts or user prompts."
@@ -703,6 +720,8 @@ def decode_to_pil(vae, samples) -> Image.Image:
     with torch.inference_mode():
         decoded = vae.decode(samples)
 
+    if decoded.dim() == 5:
+        decoded = decoded.flatten(0, 1)
     if decoded.dim() == 4:
         image = decoded[0]
     else:
@@ -827,7 +846,11 @@ def run_model_compare(model_type: str, width: int, height: int, out_dir: str) ->
     _reset_comfy_memory(f"before {model_type}")
     defaults = MODEL_DEFAULTS[model_type]
 
-    if model_type == "moss_image":
+    if model_type == "anima":
+        from anima_test_support import load_anima_models
+        model, clip, vae = load_anima_models()
+        flux_variant = None
+    elif model_type == "moss_image":
         from moss_image_test_support import load_moss_models
         model, clip, vae = load_moss_models()
         flux_variant = None
@@ -874,6 +897,8 @@ def run_model_compare(model_type: str, width: int, height: int, out_dir: str) ->
         model, width, height, fallback_channels=fallback_channels
     )
     latent = torch.zeros([1, latent_channels, latent_h, latent_w], device="cpu")
+    if model_type == "anima":
+        latent = latent.unsqueeze(2)
     latent_dict = {"samples": latent}
 
     model_out_dir = os.path.join(out_dir, model_type)
@@ -1008,7 +1033,7 @@ def main():
     parser.add_argument(
         "--models",
         default="all",
-        help="Comma-separated: moss_image,flux,klein4b,klein9b,z_image,sdxl or 'all'",
+        help="Comma-separated: anima,moss_image,flux,klein4b,klein9b,z_image,sdxl or 'all'",
     )
     parser.add_argument("--width", type=int, default=1024)
     parser.add_argument("--height", type=int, default=1024)

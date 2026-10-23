@@ -1,0 +1,161 @@
+{
+  "backend": "native ComfyUI Anima Base v1.0",
+  "comfyui_commit": "1a82e6d01f395b43275c77acd289af1eb7090bb9",
+  "model_repository": "circlestone-labs/Anima",
+  "model_revision": "f973fc41ec7545364ac9776c2440285f43ff2a30",
+  "model_files": [
+    {
+      "path": "split_files/diffusion_models/anima-base-v1.0.safetensors",
+      "size": 4182218328,
+      "sha256": "bd43b7cffe1ed1153d9c41e7beb2f18cb1273eafbaa3af3edd6a173dc90a006e"
+    },
+    {
+      "path": "split_files/text_encoders/qwen_3_06b_base.safetensors",
+      "size": 1192135096,
+      "sha256": "cd2a512003e2f9f3cd3c32a9c3573f820bb28c940f73c57b1ddaa983d9223eba"
+    },
+    {
+      "path": "split_files/vae/qwen_image_vae.safetensors",
+      "size": 253806246,
+      "sha256": "a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f"
+    }
+  ],
+  "loras": [
+    {
+      "model_id": 1564966,
+      "version_id": 3332572,
+      "adapter": "starfire",
+      "name": "StarfireTT_ANIMAv1_v3.safetensors",
+      "size": 86123848,
+      "sha256": "b9c8dddbbd15ca1e41186a850d0c732ef77740672ed719a1a5ee7cedb69c65aa",
+      "trigger": [
+        "strfr, green eyes, red hair, long hair, colored sclera, green sclera,",
+        "strfr, green eyes, red hair, long hair, colored sclera, green sclera,  midriff, crop top, gorget, skirt, thighhighs,"
+      ],
+      "creator": "CitronLegacy"
+    },
+    {
+      "model_id": 2809374,
+      "version_id": 3168039,
+      "adapter": "albedo",
+      "name": "AlbedoOverlord_ANIMAv1_v1.safetensors",
+      "size": 86128720,
+      "sha256": "cd062172bb9146c3ff96b10826691bf2ec4a0c133186cf1b46483547981f960f",
+      "trigger": [
+        "lbd0c1tr0n, yellow eyes, slit pupils, long hair, hair between eyes, ahoge, black hair, demon horns, white horns,",
+        "lbd0c1tr0n, yellow eyes, slit pupils, long hair, hair between eyes, ahoge, black hair, demon horns, white horns,\nblack wings, feathered wings, low wings, bare shoulders, dress, detached collar, white dress, white gloves, cleavage,"
+      ],
+      "creator": "CitronLegacy"
+    }
+  ],
+  "prompt": "masterpiece, best quality, 2girls, upper body, strfr, Starfire, green eyes, green sclera, long red hair, purple crop top, purple skirt, silver gorget, cartoon style on the left, and lbd0c1tr0n, Albedo, yellow eyes, slit pupils, long black hair, white horns, white dress, gold ornaments, black feathered wings, anime style on the right, standing shoulder to shoulder in a sunny garden with flowers, looking at viewer, smiling",
+  "negative_prompt": "worst quality, low quality, bad anatomy, text, watermark",
+  "concepts": {
+    "starfire": "strfr, Starfire, green eyes, green sclera, long red hair, purple crop top, purple skirt, silver gorget, cartoon style",
+    "albedo": "lbd0c1tr0n, Albedo, yellow eyes, slit pupils, long black hair, white horns, white dress, gold ornaments, black feathered wings, anime style"
+  },
+  "background_text": "a sunny garden with flowers",
+  "width": 1024,
+  "height": 1024,
+  "latent_shape": [
+    1,
+    16,
+    1,
+    128,
+    128
+  ],
+  "seed": 42,
+  "steps": 30,
+  "cfg": 4.5,
+  "sampler": "euler",
+  "scheduler": "simple",
+  "collection": {
+    "collect_step": 5,
+    "collect_block": 12,
+    "collect_block_end": 12,
+    "top_k_ratio": 0.1,
+    "temperature": 1.0,
+    "disable_lora_phase1": true
+  },
+  "routing": {
+    "bias_scale": 4.0,
+    "positive_bias_scale": 2.0,
+    "bias_blocks": "all",
+    "bidirectional": false,
+    "bg_scale": 0.95,
+    "use_morphological_cleaning": true,
+    "balance_iterations": 15,
+    "balance_lr": 0.01,
+    "gravity_weight": 4e-05,
+    "spatial_weight": 4e-05,
+    "momentum": 0.2,
+    "anisotropy": 1.3
+  },
+  "comparison": "baseline uses both LoRAs globally; FreeFuse uses inferred masks and cross-attention bias; identical model, noise, prompt, steps, CFG and scheduler",
+  "matched_targets_per_lora": 280,
+  "mask_coverage": {
+    "starfire": 0.335693359375,
+    "albedo": 0.664306640625,
+    "__background__": 0.0
+  },
+  "limitations": [
+    "single prompt and single still image",
+    "native ComfyUI backend only",
+    "Base v1.0 tested; other variants not validated"
+  ],
+  "outputs": [
+    {
+      "filename": "baseline.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "sha256": "6a0f14e887972b2acf46fc481959730f1e26c196df81cd1df5dc1a5b18b8320b"
+    },
+    {
+      "filename": "freefuse.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "sha256": "e47a161fe56f30918066c626b9ff9adc7a5f122ca0d1ecc36e7c95b02af6d2e1"
+    },
+    {
+      "filename": "compare.png",
+      "size": [
+        2048,
+        1152
+      ],
+      "sha256": "e5d3c3d51e679e25724e7032a85b986f00d71498b473567c3c6833ea14abbfa9"
+    },
+    {
+      "filename": "mask_preview.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "sha256": "09efa9423b6987f37cea00024acc91dd13b446f497fdc2ee4a9008e8cd36284f"
+    }
+  ],
+  "ui_validation": {
+    "status": "success",
+    "prompt_id": "fb430076-b940-4540-b58e-823b9882a512",
+    "width": 1024,
+    "height": 1024,
+    "direct_comparison_pixel_equal": true
+  },
+  "regression_tests": {
+    "passed": 38,
+    "workflow_subtests_passed": 19,
+    "command": "python -m pytest -q tests freefuse_comfyui/tests/test_workflow_integrity.py freefuse_comfyui/tests/test_krea2_static.py"
+  },
+  "rectangular_range_execution": {
+    "status": "success",
+    "width": 768,
+    "height": 1024,
+    "collect_block": 10,
+    "collect_block_end": 14,
+    "temperature": 0.0,
+    "scope": "execution/grid validation; not the selected qualitative example"
+  }
+}

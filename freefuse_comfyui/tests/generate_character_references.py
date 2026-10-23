@@ -28,7 +28,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--models", default="flux,z_image,klein9b,klein4b,sdxl")
     parser.add_argument("--size", type=int, default=1024)
-    parser.add_argument("--character", choices=["harry", "daiyu", "jinx", "skeleton", "harry_klein", "shalnark_klein"], help="Generate only this adapter")
+    parser.add_argument("--character", choices=["harry", "daiyu", "jinx", "skeleton", "harry_klein", "shalnark_klein", "starfire", "albedo"], help="Generate only this adapter")
     parser.add_argument("--out-dir", required=True)
     args = parser.parse_args()
     if args.size < 256 or args.size % 64:
@@ -51,6 +51,9 @@ def main():
         manifest = json.loads(manifest_path.read_text())
 
     def load_base(kind):
+        if kind == "anima":
+            from anima_test_support import load_anima_models
+            return (*load_anima_models(), {"diffusion_model": "anima-base-v1.0.safetensors", "text_encoders": ["qwen_3_06b_base.safetensors"], "vae": "qwen_image_vae.safetensors"})
         if kind == "sdxl":
             names = {"checkpoint": "sd_xl_base_1.0.safetensors"}
             return (*CheckpointLoaderSimple().load_checkpoint(names["checkpoint"]), names)
@@ -85,7 +88,7 @@ def main():
         return positive, negative
 
     for kind in args.models.split(","):
-        if kind not in {"flux", "z_image", "klein9b", "klein4b", "sdxl"}:
+        if kind not in {"anima", "flux", "z_image", "klein9b", "klein4b", "sdxl"}:
             raise ValueError(f"Unsupported model: {kind}")
         settings = compare.MODEL_DEFAULTS[kind]
         _, negative, concepts, background, a, b = compare._default_prompt_config(kind)
@@ -110,6 +113,8 @@ def main():
             conditioning, neg_conditioning = encode(kind, clip_single, prompt, negative)
             channels, h, w = compare._get_latent_shape(model_single, args.size, args.size)
             latent = torch.zeros([1, channels, h, w])
+            if kind == "anima":
+                latent = latent.unsqueeze(2)
             sigmas = compare._build_flux2_sigmas(settings["steps"], args.size, args.size) if kind.startswith("klein") else None
             noise = compare.comfy.sample.prepare_noise(latent, settings["seed"], None)
             with torch.inference_mode():

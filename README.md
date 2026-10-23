@@ -21,6 +21,7 @@
 - [x] Supports FLUX.2-klein-4B/9B in ComfyUI
 - [x] Supports Krea2 in ComfyUI
 - [x] Experimental MOSS Image Base/SFT support in Diffusers and ComfyUI
+- [x] [Anima Base v1.0 support in ComfyUI](docs/anima.md)
 - [x] Support ControlNet+FreeFuse in ComfyUI
 - [ ] Exploring FreeFuse in text2video model
 
