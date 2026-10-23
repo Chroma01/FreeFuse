@@ -145,7 +145,7 @@
     "direct_comparison_pixel_equal": true
   },
   "regression_tests": {
-    "passed": 38,
+    "passed": 40,
     "workflow_subtests_passed": 19,
     "command": "python -m pytest -q tests freefuse_comfyui/tests/test_workflow_integrity.py freefuse_comfyui/tests/test_krea2_static.py"
   },

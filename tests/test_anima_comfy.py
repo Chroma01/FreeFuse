@@ -181,3 +181,11 @@ def test_native_anima_ui_workflow_uses_available_loader_and_still_latent():
     assert nodes[10]["widgets_values"] == [1024,1024,1,1]
     assert nodes[12]["widgets_values"][4] == nodes[16]["widgets_values"][3] == 4.5
     assert nodes[4]["widgets_values"][1] == "starfire"
+
+
+@pytest.mark.parametrize("prefix", ["single_blocks", "single_transformer_blocks"])
+def test_anima_routing_does_not_capture_flux_joint_mlp(prefix):
+    hook = MultiAdapterBypassForwardHook(torch.nn.Linear(3,3),
+        f"diffusion_model.{prefix}.0.mlp.proj")
+    assert hook._should_apply_spatial_mask()
+    assert hook._get_mask_type() == "img_with_text"

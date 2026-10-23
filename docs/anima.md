@@ -97,7 +97,7 @@ python freefuse_comfyui/tests/generate_character_references.py --models anima \
 python -m pytest -q tests/test_anima_comfy.py
 ```
 
-Validation includes 38 regression tests, native tiny-model parity/CFG isolation,
+Validation includes 40 regression tests, native tiny-model parity/CFG isolation,
 a 1024 × 1024 UI run whose output exactly matches the direct API run, and
 768 × 1024 execution with collection blocks 10–14. The latter checks grid/range
 handling and is not the selected quality example.
