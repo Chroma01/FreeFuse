@@ -5,3 +5,5 @@ __pycache__/
 *.pyc
 tests/
 scripts/
+# Development API client; not imported by runtime nodes.
+export_api.py

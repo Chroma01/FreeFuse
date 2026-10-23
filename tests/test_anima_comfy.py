@@ -189,3 +189,11 @@ def test_anima_routing_does_not_capture_flux_joint_mlp(prefix):
         f"diffusion_model.{prefix}.0.mlp.proj")
     assert hook._should_apply_spatial_mask()
     assert hook._get_mask_type() == "img_with_text"
+
+
+@pytest.mark.parametrize("dtype", [torch.uint8, torch.int8, torch.float8_e4m3fn])
+def test_release_keeps_quantized_lora_adapter_precision_protected(dtype, monkeypatch):
+    from freefuse_comfyui.freefuse_core.bypass_lora_loader import _sanitize_adapter_dtype
+    monkeypatch.setenv("FREEFUSE_ALLOW_FP8_ADAPTER_CAST", "1")
+    assert _sanitize_adapter_dtype(dtype) is None
+    assert _sanitize_adapter_dtype(torch.bfloat16) == torch.bfloat16

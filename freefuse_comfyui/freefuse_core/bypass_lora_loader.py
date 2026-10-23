@@ -19,7 +19,6 @@ Future: This fix should be submitted as a PR to ComfyUI core.
 
 import logging
 import copy
-import os
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
@@ -68,10 +67,6 @@ def _sanitize_adapter_dtype(dtype: Optional[torch.dtype]) -> Optional[torch.dtyp
     - Avoid integer/bool casts: GGUF quantized layers often expose uint8 weights.
       Casting LoRA tensors to non-floating dtypes destroys the LoRA delta.
     """
-    # Debug/ablation switch: opt back into original behavior when needed.
-    if os.environ.get("FREEFUSE_ALLOW_FP8_ADAPTER_CAST", "0") == "1":
-        return dtype
-
     if dtype is None:
         return None
 
@@ -454,10 +449,10 @@ class MultiAdapterBypassForwardHook:
             logging.debug(f"[OffsetBypass] Skipping spatial mask for layer: {self.module_key}")
 
         # Debug summary for Z-Image layer mask decisions
-        if is_z_image and os.environ.get("FREEFUSE_DEBUG_ZIMAGE") == "1":
+        if is_z_image and logging.getLogger(__name__).isEnabledFor(logging.DEBUG):
             if not hasattr(self, "_debug_zimage_mask_logged"):
                 self._debug_zimage_mask_logged = True
-                print(f"[FreeFuse Z-Image Debug] mask_apply={result} mask_type={mask_type} layer={self.module_key}")
+                logging.debug(f"[FreeFuse Z-Image Debug] mask_apply={result} mask_type={mask_type} layer={self.module_key}")
         
         return result
     
@@ -719,11 +714,11 @@ class MultiAdapterBypassForwardHook:
             full_mask = mask_flat.to(device=device, dtype=dtype)
 
         # Debug: log resolved lengths for Z-Image once per adapter
-        if mask_type == 'z_image_unified' and os.environ.get("FREEFUSE_DEBUG_ZIMAGE") == "1":
+        if mask_type == 'z_image_unified' and logging.getLogger(__name__).isEnabledFor(logging.DEBUG):
             debug_key = f"_debug_zimage_mask_shape_{adapter_name}"
             if not hasattr(self, debug_key):
                 setattr(self, debug_key, True)
-                print(
+                logging.debug(
                     f"[FreeFuse Z-Image Debug] seq_len={seq_len} cap_len={cap_len} img_len={img_len} "
                     f"mask_shape={tuple(mask.shape)} adapter={adapter_name} layer={self.module_key}"
                 )
@@ -1094,7 +1089,7 @@ class OffsetBypassInjectionManager:
         
         logging.debug(f"[OffsetBypass] Created {len(self.hooks)} hooks")
 
-        if os.environ.get("FREEFUSE_DEBUG_ZIMAGE") == "1":
+        if logging.getLogger(__name__).isEnabledFor(logging.DEBUG):
             # Summarize Z-Image mask application across hooked modules
             total = 0
             apply_count = 0
@@ -1109,9 +1104,9 @@ class OffsetBypassInjectionManager:
                 mask_type_counts[mask_type] = mask_type_counts.get(mask_type, 0) + 1
                 if len(sample) < 10:
                     sample.append((hook.module_key, mask_type, apply))
-            print(f"[FreeFuse Z-Image Debug] hooks={total} apply={apply_count} mask_types={mask_type_counts}")
+            logging.debug(f"[FreeFuse Z-Image Debug] hooks={total} apply={apply_count} mask_types={mask_type_counts}")
             for mk, mt, ap in sample:
-                print(f"[FreeFuse Z-Image Debug] sample layer={mk} mask_type={mt} apply={ap}")
+                logging.debug(f"[FreeFuse Z-Image Debug] sample layer={mk} mask_type={mt} apply={ap}")
         
         # IMPORTANT: Don't capture self in closures!
         # When model is cloned, model_options is deepcopied creating new manager,

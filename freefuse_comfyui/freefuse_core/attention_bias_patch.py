@@ -17,7 +17,6 @@ import torch
 import torch.nn.functional as F
 from typing import Dict, Any, Optional, Callable, List, Tuple
 import logging
-import os
 
 # Z-Image (Lumina2 / NextDiT) helpers
 import comfy.ops
@@ -662,9 +661,9 @@ class FreeFuseZImageBiasBlockReplace:
         # which matches construct_attention_bias's output layout directly
         self._bias_cache[cache_key] = bias
 
-        if os.environ.get("FREEFUSE_DEBUG_ZIMAGE") == "1":
+        if logging.getLogger(__name__).isEnabledFor(logging.DEBUG):
             try:
-                print(
+                logging.debug(
                     "[FreeFuse Z-Image Debug] attention_bias "
                     f"(cap_len={cap_len}, img_len={img_len}) "
                     f"min={bias.min().item():.4f} max={bias.max().item():.4f} "
