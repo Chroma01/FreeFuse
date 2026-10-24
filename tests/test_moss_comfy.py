@@ -118,7 +118,11 @@ def test_native_moss_token_positions_match_release_template_for_unicode():
     concepts = {"fairy": "金发精灵", "demon": "黑发女性"}
     actual = find_concept_positions(clip, prompt, concepts, model_type="moss_image")
     hf = get_tokenizer_for_model(clip, "moss_image")
-    expected = find_moss_concept_positions(hf, prompt, concepts)
+    # Native ComfyUI may supply the slow Qwen tokenizer. Compare its byte spans
+    # against the independent fast-tokenizer offsets used by Diffusers.
+    from transformers import Qwen2TokenizerFast
+    reference = Qwen2TokenizerFast.from_pretrained(hf.name_or_path)
+    expected = find_moss_concept_positions(reference, prompt, concepts)
     assert actual == expected
     ids = _flatten_chunked_token_ids(clip.tokenize(prompt))
     assert "<think>\n" in hf.decode(ids)

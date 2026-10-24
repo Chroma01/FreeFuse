@@ -263,6 +263,7 @@ class MultiAdapterBypassForwardHook:
         self.mask_enabled: bool = False
         # Explicit packed sequence span; rows outside it retain global LoRA strength.
         self.packed_mask_slice: Optional[Tuple[int, int]] = None
+        self._force_forward_state = None
         self.txt_len: int = 256  # Default Flux txt length (CLIP + T5)
         
         # LoRA enable/disable support (for Phase 1 mask collection)
@@ -293,6 +294,7 @@ class MultiAdapterBypassForwardHook:
         new_obj.latent_size = copy.deepcopy(self.latent_size, memo)
         new_obj.mask_enabled = self.mask_enabled
         new_obj.packed_mask_slice = self.packed_mask_slice
+        new_obj._force_forward_state = None
         new_obj.txt_len = self.txt_len
         new_obj.lora_enabled = self.lora_enabled
         new_obj._should_apply_mask_cached = self._should_apply_mask_cached
@@ -938,6 +940,12 @@ class MultiAdapterBypassForwardHook:
             for adapter_info in self.adapters:
                 self._move_adapter_weights_to_device(adapter_info['adapter'], device, dtype)
         
+        # Native fused input-activation helpers must not bypass output-space LoRAs.
+        self._force_forward_state = (
+            "comfy_force_forward" in vars(self.module),
+            getattr(self.module, "comfy_force_forward", False),
+        )
+        self.module.comfy_force_forward = True
         self.original_forward = self.module.forward
         self.module.forward = self._bypass_forward
         logging.debug(f"[OffsetBypass] Injected multi-adapter hook for {type(self.module).__name__} "
@@ -983,7 +991,14 @@ class MultiAdapterBypassForwardHook:
         current_forward = getattr(self.module, "forward", None)
         if current_forward is not None and hasattr(current_forward, "__self__") and current_forward.__self__ is self:
             self.module.forward = self.original_forward
+            if self._force_forward_state is not None:
+                existed, value = self._force_forward_state
+                if existed:
+                    self.module.comfy_force_forward = value
+                else:
+                    delattr(self.module, "comfy_force_forward")
         self.original_forward = None
+        self._force_forward_state = None
         logging.debug(f"[OffsetBypass] Ejected multi-adapter hook for {type(self.module).__name__}")
 
 
@@ -1007,6 +1022,7 @@ class OffsetBypassInjectionManager:
         self._pending_masks: Optional[Dict[str, torch.Tensor]] = None
         self._pending_latent_size: Optional[Tuple[int, int]] = None
         self._pending_txt_len: int = 256
+        self._lora_enabled: bool = True
 
         # Track which model instance the current `hooks` list was built for.
         # ModelPatcher.clone() deepcopies model_options, which can leave hooks
@@ -1156,6 +1172,7 @@ class OffsetBypassInjectionManager:
                     current_manager._rebuild_hooks(model_patcher.model)
             
             for hook in current_manager.hooks:
+                hook.lora_enabled = current_manager._lora_enabled
                 hook.inject()
             
             # Apply pending masks if they were set before injection
@@ -1265,6 +1282,7 @@ class OffsetBypassInjectionManager:
         the base model output is returned. This allows collecting attention
         patterns from the pure base model without LoRA interference.
         """
+        self._lora_enabled = False
         for hook in self.hooks:
             hook.disable_lora()
         logging.debug(f"[OffsetBypass] Disabled LoRA on {len(self.hooks)} hooks")
@@ -1275,6 +1293,7 @@ class OffsetBypassInjectionManager:
         
         Re-enables adapter contributions after Phase 1 collection.
         """
+        self._lora_enabled = True
         for hook in self.hooks:
             hook.enable_lora()
         logging.debug(f"[OffsetBypass] Enabled LoRA on {len(self.hooks)} hooks")

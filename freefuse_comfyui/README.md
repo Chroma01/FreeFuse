@@ -12,13 +12,31 @@ FreeFuse for ComfyUI: multi-concept LoRA composition with spatial awareness.
 - [workflows/krea2_freefuse_with_editor.json](workflows/krea2_freefuse_with_editor.json)
 - [workflows/moss_image_freefuse_complete.json](workflows/moss_image_freefuse_complete.json)
 - [workflows/anima_freefuse_complete.json](workflows/anima_freefuse_complete.json)
+- [workflows/minimax_h3_freefuse_complete.json](workflows/minimax_h3_freefuse_complete.json)
 
 ## Installation
 
 ```bash
-git clone <this-repo>
-ln -s /path/to/FreeFuse/comfyui ComfyUI/custom_nodes
+cd /path/to/ComfyUI/custom_nodes
+git clone --depth 1 --branch comfyui https://github.com/yaoliliu/FreeFuse.git freefuse_comfyui
 ```
+
+## MiniMax H3 video
+
+The existing FreeFuse nodes automatically recognize native H3 joint video/audio
+latents. Start with the complete H3 workflow above; it saves with/without MP4s
+and previews temporal regions using one shared prompt, seed and step count.
+Use the full BF16 H3 model, native Qwen3-VL 32B text encoder (`minimax`), H3 video
+and audio VAEs, and H3-trained character LoRAs.
+
+The example uses 768 × 768, 124 frames, CFG 1, 20 `res_multistep` / `simple`
+steps, collection step 4/block 20, temperature 100000, top-k 0.1, and
+`h3_temporal_window=3`. Masks are `[time,height,width]`; the preview batch shows
+latent time positions. H3 currently supports a single T2VA clip and one collection
+block. Keyframe/reference guides and other CFG values are rejected in Phase 1.
+Text/audio LoRA contributions remain global, and attention bias is video-to-text.
+
+See the [H3 setup, weight links and validated scope](https://github.com/yaoliliu/FreeFuse/blob/master/docs/minimax_h3.md).
 
 ## Example LoRAs and Prompt (from test_parameters.py)
 

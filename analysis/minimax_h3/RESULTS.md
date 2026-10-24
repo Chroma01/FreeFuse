@@ -1,5 +1,9 @@
 # MiniMax H3 上的 FreeFuse 探索（2026-10-24）
 
+> 后续节点接入验证（1.3.0）：H3 实现已迁入独立的 ComfyUI 包，并接入现有 FreeFuse 节点；使用方式见 [正式节点文档](../../docs/minimax_h3.md)。下文保留最初探索时的结论与检查记录。
+>
+> 正式 UI/API workflow 在种子 42、2026 上均完成 with/without 两条分支，分别保存 768 × 768、124 帧且包含音轨的 MP4。第二次从 ComfyUI 界面提交，无缓存节点，任务 `3bc59051-5ed7-4711-9f68-49f1eb03709c` 成功完成。最终回归为 57 项通过（H3、MOSS、Anima），workflow 完整性 2 项、Krea2 静态检查 7 项通过；UI 导入、导出回读与 API 示例的执行输入一致。最终检查使用 GPU 6，完整节点生成使用 GPU 7，均在上述任务专用环境中执行。慢 Qwen tokenizer 的 MOSS Unicode 对齐问题也已在该版本修复，下面的旧失败记录不再代表最终状态。
+
 这次要回答的是：两套角色 LoRA 同时加载到 H3 后，FreeFuse 能否减少特征互相污染。先在韩国 DSW 的独立环境中跑通原生 H3，再固定提示词、种子和采样设置做有无 FreeFuse 的比较。**目前证据支持“在这组轻微动作的双角色视频中可以生效”，还不足以宣布通用的视频支持。**
 
 第一段对照加载 Starfire 与 Albedo 两套 LoRA，各匹配 200 个 H3 原生目标层。不开 FreeFuse 时，Starfire 在种子 42 和 2026 中都出现了 Albedo 的白角，眼睛、手套和服装也有混合。随后分别只加载一套 LoRA 生成单人参考；这些参考展示各自的外观，但提示词不同，不是逐像素对齐的真值。Starfire 来自 Teen Titans 角色/画风 LoRA，并非专门只训练 Starfire 的权重。

@@ -80,11 +80,11 @@ class FreeFusePhase1Sampler:
                 # Block selection — Flux
                 "collect_block": ("INT", {
                     "default": 18, "min": 0, "max": 56,
-                    "tooltip": "[Flux/Flux2/Z-Image/Krea2 only] Flux uses transformer_blocks.<idx>; Flux2 uses single_transformer_blocks.<idx>; Z-Image uses layers.<idx>; Krea2 uses blocks.<idx> (0-27). Ignored for SDXL."
+                    "tooltip": "Transformer collection layer. H3 uses blocks.<idx> (0-49); see its example workflow. Ignored for SDXL."
                 }),
                 "collect_block_end": ("INT", {
                     "default": 18, "min": 0, "max": 56,
-                    "tooltip": "[Flux/Flux2/Z-Image/Krea2 only] Optional end block (inclusive). If > collect_block, collect a range and aggregate by majority voting."
+                    "tooltip": "Optional inclusive end block for image-model voting. H3 currently requires end = collect_block."
                 }),
                 # Block selection — SDXL
                 "collect_region": (list(SDXL_COLLECT_REGION_MAP.keys()), {
@@ -97,8 +97,8 @@ class FreeFusePhase1Sampler:
                 }),
                 # Similarity map computation parameters
                 "temperature": ("FLOAT", {
-                    "default": 0.0, "min": 0.0, "max": 10000.0, "step": 100.0,
-                    "tooltip": "Temperature for softmax in similarity computation. 0=auto (Flux:4000, SDXL:300)"
+                    "default": 0.0, "min": 0.0, "max": 1000000.0, "step": 100.0,
+                    "tooltip": "Temperature for similarity softmax. 0=auto (H3:100000, Flux:4000, SDXL:300)"
                 }),
                 "top_k_ratio": ("FLOAT", {
                     "default": 0.3, "min": 0.01, "max": 1.0, "step": 0.05,
@@ -151,6 +151,10 @@ class FreeFusePhase1Sampler:
                     "default": 1.3, "min": 0.5, "max": 3.0, "step": 0.1,
                     "tooltip": "Horizontal stretch factor for spatial coordinates (>1 = prefer wider masks, <1 = prefer taller masks)"
                 }),
+                "h3_temporal_window": ([1, 3, 5], {
+                    "default": 3,
+                    "tooltip": "MiniMax H3 only: smooth automatic masks across this many latent time positions."
+                }),
             }
         }
     
@@ -174,6 +178,9 @@ Block Selection (model-type aware):
 - SDXL: Use 'collect_region' + 'collect_tf_index' to pick a UNet cross-attention block.
   The recommended default is output_early (region) + 3 (tf_index).
   Other parameters for the non-active model type are simply ignored.
+- MiniMax H3: Use native joint AV latents, CFG 1 and one collection block.
+  The example uses collect_step=4, block/end=20, temperature=100000 and top-k=0.1.
+  h3_temporal_window smooths the [time,height,width] mask volume.
 
 Other Parameters:
 - temperature: Softmax temperature for similarity (0=auto-detect by model type)
@@ -204,7 +211,23 @@ for Phase 2 generation with the same seed and steps."""
                       use_morphological_cleaning=True, balance_iterations=15,
                       balance_lr=0.01, gravity_weight=0.00004, spatial_weight=0.00004,
                       momentum=0.2, centroid_margin=0.0, border_penalty=0.0,
-                      anisotropy=1.3, sigmas=None):
+                      anisotropy=1.3, sigmas=None, h3_temporal_window=3):
+
+        if detect_model_type(model=model, model_type_hint=freefuse_data.get("model_type")) == "minimax_h3":
+            from ..freefuse_core.minimax_h3_support import collect_masks
+            return collect_masks(
+                model, conditioning, neg_conditioning, latent, freefuse_data,
+                seed, steps, collect_step, cfg, sampler_name, scheduler,
+                collect_block, collect_block_end, temperature, top_k_ratio,
+                disable_lora_phase1,
+                include_background=freefuse_data.get("settings", {}).get("enable_background", True),
+                temporal_window=h3_temporal_window, sigmas=sigmas,
+                bg_scale=bg_scale, use_morphological_cleaning=use_morphological_cleaning,
+                max_iter=balance_iterations, balance_lr=balance_lr,
+                gravity_weight=gravity_weight, spatial_weight=spatial_weight,
+                momentum=momentum, centroid_margin=centroid_margin,
+                border_penalty=border_penalty, anisotropy=anisotropy,
+            )
         
         concepts = freefuse_data.get("concepts", {})
         settings = freefuse_data.get("settings", {})

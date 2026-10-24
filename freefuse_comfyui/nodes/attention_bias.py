@@ -169,7 +169,14 @@ Parameters:
         latent_h, latent_w = latent_size
         attention_bias = None
         
-        if model_type in ("flux", "flux2"):
+        if model_type == "minimax_h3":
+            from ..freefuse_core.minimax_h3_support import install_patches
+            install_patches(
+                model_clone, masks=mask_dict, positions=token_pos_maps,
+                bias=True, negative=bias_scale,
+                positive=positive_bias_scale if use_positive_bias else 0., bias_blocks=bias_blocks,
+            )
+        elif model_type in ("flux", "flux2"):
             # For Flux, masks from generate_masks are ALREADY in packed space (H/16, W/16)
             # So img_seq_len is simply latent_h * latent_w (no additional packing needed)
             img_seq_len = latent_h * latent_w

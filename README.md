@@ -23,7 +23,7 @@
 - [x] Experimental MOSS Image Base/SFT support in Diffusers and ComfyUI
 - [x] [Anima Base v1.0 support in ComfyUI](docs/anima.md)
 - [x] Support ControlNet+FreeFuse in ComfyUI
-- [ ] Exploring FreeFuse in text2video model
+- [x] [Native MiniMax H3 text-to-audio-video support in ComfyUI](docs/minimax_h3.md)
 
 ## 📖 Abstract
 
@@ -51,6 +51,16 @@ This paper proposes **FreeFuse**, a training-free framework for multi-subject te
   <em>Additional comparisons demonstrating FreeFuse's effectiveness on SDXL.</em>
 </p>
 
+### Results on MiniMax H3 video (ComfyUI)
+
+<p align="center">
+  <img src="assets/minimax_h3_compare.jpg" alt="MiniMax H3: global LoRAs and automatic FreeFuse, middle video frame" width="100%">
+</p>
+
+Middle frame from the native ComfyUI workflow: global LoRAs on the left,
+automatic FreeFuse on the right. The example generates 768 × 768 videos with
+124 frames and native audio. See the [H3 workflow, model setup and validated scope](docs/minimax_h3.md).
+
 ## 🏗️ Architecture
 
 <p align="center">
@@ -75,7 +85,8 @@ cd <your ComfyUI path>/custom_nodes
 git clone --depth 1 --branch comfyui https://github.com/yaoliliu/FreeFuse.git freefuse_comfyui
 ```
 
-You can find workflows for flux.dev and SDXL in the `freefuse_comfyui/workflows` folder. (*^▽^*)
+You can find example workflows in the `freefuse_comfyui/workflows` folder,
+including the [MiniMax H3 video comparison workflow](freefuse_comfyui/workflows/minimax_h3_freefuse_complete.json).
 
 ### Installation with diffusers
 

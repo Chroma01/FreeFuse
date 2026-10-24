@@ -83,6 +83,17 @@ Background mask (if present) is always gray."""
         if not mask_dict:
             empty = torch.zeros(1, height, width, 3)
             return (empty, empty)
+
+        if masks.get("model_type") == "minimax_h3":
+            from ..freefuse_core.minimax_h3_support import validate_masks
+            _, grid = validate_masks(mask_dict)
+            previews, panels = [], []
+            for frame in range(grid[0]):
+                pair = self.preview({"masks": {name: volume[frame] for name, volume in mask_dict.items()}},
+                                    width, height, show_labels, False)
+                previews.append(pair[0])
+                panels.append(pair[1])
+            return torch.cat(previews), torch.cat(panels)
         
         # Sort masks: regular concepts first, background last
         sorted_names = []

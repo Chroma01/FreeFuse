@@ -14,9 +14,10 @@ def main():
     args = parser.parse_args()
     # Refuse an occupied port instead of interfering with another process.
     with socket.socket() as probe:
+        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         probe.bind(("127.0.0.1", args.local_port))
     command = [
-        "ssh", "-NT", "-p", str(args.ssh_port),
+        "ssh", "-C", "-NT", "-p", str(args.ssh_port),
         "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=yes",
         "-o", "ConnectTimeout=20", "-o", "ExitOnForwardFailure=yes",
         "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=3",
