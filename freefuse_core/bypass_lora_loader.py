@@ -261,6 +261,8 @@ class MultiAdapterBypassForwardHook:
         self.masks: Optional[Dict[str, torch.Tensor]] = None  # adapter_name -> mask
         self.latent_size: Optional[Tuple[int, int]] = None  # (H, W) of latent
         self.mask_enabled: bool = False
+        # Explicit packed sequence span; rows outside it retain global LoRA strength.
+        self.packed_mask_slice: Optional[Tuple[int, int]] = None
         self.txt_len: int = 256  # Default Flux txt length (CLIP + T5)
         
         # LoRA enable/disable support (for Phase 1 mask collection)
@@ -290,6 +292,7 @@ class MultiAdapterBypassForwardHook:
         new_obj.masks = copy.deepcopy(self.masks, memo)
         new_obj.latent_size = copy.deepcopy(self.latent_size, memo)
         new_obj.mask_enabled = self.mask_enabled
+        new_obj.packed_mask_slice = self.packed_mask_slice
         new_obj.txt_len = self.txt_len
         new_obj.lora_enabled = self.lora_enabled
         new_obj._should_apply_mask_cached = self._should_apply_mask_cached
@@ -390,6 +393,8 @@ class MultiAdapterBypassForwardHook:
         Returns:
             True if spatial mask should be applied, False otherwise
         """
+        if self.packed_mask_slice is not None:
+            return True
         if self._should_apply_mask_cached is not None:
             return self._should_apply_mask_cached
         
@@ -602,6 +607,13 @@ class MultiAdapterBypassForwardHook:
             return None
         
         mask = self.masks[adapter_name]
+        if self.packed_mask_slice is not None:
+            start, stop = self.packed_mask_slice
+            if not 0 <= start < stop <= seq_len or mask.numel() != stop - start:
+                raise ValueError("Packed spatial mask does not match its explicit sequence segment.")
+            full_mask = torch.ones(seq_len, device=device, dtype=dtype)
+            full_mask[start:stop] = mask.reshape(-1).to(device=device, dtype=dtype)
+            return full_mask
         mask_type = self._get_mask_type()
         
         if mask_type == "moss_image_unified":
@@ -759,7 +771,9 @@ class MultiAdapterBypassForwardHook:
         # Determine sequence length for mask (for Flux: B, seq_len, hidden)
         # Typically x shape is (B, seq_len, in_features) or (B, channels, H, W)
         seq_len = None
-        if base_out.dim() == 3:
+        if base_out.dim() == 2 and self.packed_mask_slice is not None:
+            seq_len = base_out.shape[0]
+        elif base_out.dim() == 3:
             # Transformer-style: (B, seq_len, hidden)
             seq_len = base_out.shape[1]
         elif base_out.dim() == 5 and self._get_mask_type() == "img_only":
@@ -814,7 +828,9 @@ class MultiAdapterBypassForwardHook:
                     # Apply mask to h_out
                     # h_out shape: (B, seq_len, features) for transformer
                     # mask shape: (seq_len,)
-                    if h_out.dim() == 3:
+                    if h_out.dim() == 2:
+                        h_out = h_out * mask[:, None]
+                    elif h_out.dim() == 3:
                         # Expand mask to match: (1, seq_len, 1)
                         mask_expanded = mask.view(1, -1, 1)
                         h_out = h_out * mask_expanded
