@@ -65,7 +65,7 @@ class FreeFuseMaskApplicator:
             "optional": {
                 "enable_token_masking": ("BOOLEAN", {
                     "default": True,
-                    "tooltip": "Zero out LoRA at other concepts' token positions"
+                    "tooltip": "Zero out LoRA at other concepts' token positions (H3 keeps text/audio contributions global)."
                 }),
                 "latent": ("LATENT", {
                     "tooltip": "Optional latent for size reference"
@@ -93,7 +93,7 @@ class FreeFuseMaskApplicator:
                 }),
                 "bias_blocks": (["all", "double_stream_only", "single_stream_only", "last_half_double", "last_half", "none"], {
                     "default": "double_stream_only",
-                    "tooltip": "Which transformer blocks to apply attention bias. For Krea2, use all or last_half."
+                    "tooltip": "Which blocks receive attention bias. For H3 use all, last_half or none; double_stream_only is an alias for all."
                 }),
             }
         }
@@ -157,6 +157,20 @@ When enabled, constructs soft attention bias to guide cross-attention:
             model_type_hint=freefuse_data.get("model_type"),
         )
         print(f"[FreeFuse] Detected model type: {model_type}")
+
+        if model_type == "minimax_h3":
+            from ..freefuse_core.minimax_h3_support import install_patches, video_latent
+            if latent is not None:
+                video = video_latent(latent["samples"])
+                expected = (video.shape[2], video.shape[3] // 2, video.shape[4] // 2)
+                if any(tuple(mask.shape) != expected for mask in mask_dict.values()):
+                    raise ValueError(f"MiniMax H3 masks must match video grid {expected}.")
+            install_patches(
+                model_clone, masks=mask_dict, positions=token_pos_maps, route=True,
+                bias=enable_attention_bias, negative=bias_scale,
+                positive=positive_bias_scale if use_positive_bias else 0., bias_blocks=bias_blocks,
+            )
+            return (model_clone,)
         
         # Get adapter name to mask mapping
         adapter_mask_map = {}

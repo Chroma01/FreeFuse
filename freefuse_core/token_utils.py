@@ -93,6 +93,9 @@ def _normalize_model_type(model_type: Optional[str]) -> Optional[str]:
         return None
 
     aliases = {
+        "h3": "minimax_h3",
+        "minimax-h3": "minimax_h3",
+        "minimaxh3": "minimax_h3",
         "moss": "moss_image",
         "moss-image": "moss_image",
         "mossimage": "moss_image",
@@ -137,6 +140,8 @@ def detect_model_type_from_model(model) -> str:
         return "unknown"
 
     model_cls = core_model.__class__.__name__.lower()
+    if "minimax" in model_cls and "h3" in model_cls:
+        return "minimax_h3"
     if model_cls == "anima":
         return "anima"
     if "moss" in model_cls:
@@ -154,6 +159,8 @@ def detect_model_type_from_model(model) -> str:
     dm = getattr(core_model, "diffusion_model", None)
     if dm is not None:
         dm_cls = dm.__class__.__name__.lower()
+        if "minimax" in dm_cls and "h3" in dm_cls:
+            return "minimax_h3"
         if dm_cls == "anima" or hasattr(dm, "llm_adapter"):
             return "anima"
         if "moss" in dm_cls:
@@ -183,6 +190,8 @@ def detect_model_type_from_model(model) -> str:
     unet_cfg = getattr(model_cfg, "unet_config", None)
     if isinstance(unet_cfg, dict):
         image_model = str(unet_cfg.get("image_model", "")).lower()
+        if image_model == "minimax_h3":
+            return "minimax_h3"
         if image_model == "anima":
             return "anima"
         if image_model in {"moss_image", "mossimage"}:
@@ -249,6 +258,8 @@ def detect_model_type(clip=None, model=None, model_type_hint: Optional[str] = No
     # Qwen3-VL (attribute name "qwen3vl_4b") is Krea2-specific in this ecosystem
     # so far - check before the generic qwen3 fallback below.
     tokenizer_attr_names = set(vars(tokenizer).keys())
+    if "qwen3vl_32b" in tokenizer_attr_names:
+        return "minimax_h3"
     if "qwen3_06b" in tokenizer_attr_names and "t5xxl" in tokenizer_attr_names:
         return "anima"
     if "qwen35_9b" in tokenizer_attr_names:
@@ -356,6 +367,12 @@ def get_tokenizer_for_model(clip, model_type: str = None):
     tokenizer = getattr(clip, "tokenizer", None)
     if tokenizer is None:
         raise ValueError("Could not find clip.tokenizer on CLIP object.")
+
+    if model_type == "minimax_h3":
+        resolved = _extract_nested_tokenizer(getattr(tokenizer, "qwen3vl_32b", None))
+        if resolved is None:
+            raise ValueError("MiniMax H3 requires the native qwen3vl_32b tokenizer.")
+        return resolved
 
     if model_type in ("z_image", "flux2", "qwen3", "krea2", "moss_image"):
         resolved = _resolve_qwen3_tokenizer(tokenizer)
@@ -705,14 +722,13 @@ def find_concept_positions_moss(clip, tokenizer, prompts, concepts,
                                 filter_meaningless=True, filter_single_char=True):
     """Use the actual MOSS token stream and whole-string offsets, including Unicode."""
     import re
+    from .token_offsets import native_byte_offsets
     prompts = [prompts] if isinstance(prompts, str) else list(prompts)
     result = {name: [] for name in concepts}
     for prompt in prompts:
         ids = _flatten_chunked_token_ids(clip.tokenize(prompt.strip()))
         decoded = tokenizer.decode(ids, skip_special_tokens=False)
-        encoded = tokenizer(decoded, add_special_tokens=False, return_offsets_mapping=True)
-        if list(encoded["input_ids"]) != ids:
-            raise ValueError("MOSS tokenizer offsets do not reproduce the conditioning token stream.")
+        offsets = native_byte_offsets(tokenizer, ids, decoded)
         opening = "<|im_start|>user\n"
         begin = decoded.find(opening)
         if begin < 0:
@@ -724,9 +740,10 @@ def find_concept_positions_moss(clip, tokenizer, prompts, concepts,
         for name, concept in concepts.items():
             if not isinstance(concept, str) or not concept.strip():
                 raise ValueError(f"MOSS concept {name!r} must be nonempty.")
-            spans = [(begin + m.start(), begin + m.end())
+            spans = [(len(decoded[:begin+m.start()].encode("utf-8")),
+                      len(decoded[:begin+m.end()].encode("utf-8")))
                      for m in re.finditer(re.escape(concept), decoded[begin:end])]
-            positions = [i for i, (a, b) in enumerate(encoded["offset_mapping"])
+            positions = [i for i, (a, b) in enumerate(offsets)
                          if b > a and any(a < stop and b > start for start, stop in spans)]
             if not positions:
                 raise ValueError(f"MOSS concept {concept!r} does not occur in the encoded user prompt.")
@@ -1117,6 +1134,15 @@ def find_concept_positions(
     else:
         model_type = _normalize_model_type(model_type) or model_type
     
+    if model_type == "minimax_h3":
+        from .minimax_h3_support import concept_positions
+        prompt_list = [prompts] if isinstance(prompts, str) else list(prompts)
+        result = {name: [] for name in concepts}
+        for prompt in prompt_list:
+            for name, positions in concept_positions(clip, prompt, concepts).items():
+                result[name].append(positions)
+        return result
+
     tokenizer = get_tokenizer_for_model(clip, model_type)
 
     if model_type == "anima":
@@ -1274,6 +1300,11 @@ def find_background_positions(
     """
     if model_type is None:
         model_type = detect_model_type(clip=clip)
+
+    # Background is optional; only subject descriptions are strict H3 requirements.
+    if (_normalize_model_type(model_type) == "minimax_h3" and background_text
+            and isinstance(prompt, str) and background_text not in prompt):
+        return []
     
     if background_text:
         # Use provided background text

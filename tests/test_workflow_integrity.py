@@ -15,6 +15,26 @@ def _normalise_type(value):
 
 
 class WorkflowIntegrityTests(unittest.TestCase):
+    def test_h3_comparison_shares_prompt_seed_steps_and_keeps_audio(self):
+        workflow = json.loads((WORKFLOW_DIR / "minimax_h3_freefuse_api.json").read_text())
+        for node_id in ("11", "13", "21"):
+            inputs = workflow[node_id]["inputs"]
+            self.assertEqual(inputs["seed"], ["30", 0])
+            self.assertEqual(inputs["steps"], ["31", 0])
+            self.assertEqual(inputs["cfg"], 1.0)
+            self.assertEqual(inputs["sampler_name"], "res_multistep")
+            self.assertEqual(inputs["scheduler"], "simple")
+        self.assertEqual(workflow["7"]["inputs"]["prompt"], workflow["8"]["inputs"]["text"])
+        self.assertEqual(workflow["10"]["class_type"], "EmptyMiniMaxH3LatentAV")
+        for sampler, video_decoder, audio_decoder, creator, saver in (
+            ("13", "14", "16", "17", "18"), ("21", "22", "23", "24", "25")
+        ):
+            self.assertEqual(workflow[video_decoder]["inputs"]["samples"], [sampler, 0])
+            self.assertEqual(workflow[audio_decoder]["inputs"]["samples"], [sampler, 0])
+            self.assertEqual(workflow[creator]["inputs"]["audio"], [audio_decoder, 0])
+            self.assertEqual(workflow[saver]["inputs"]["format"], "mp4")
+            self.assertEqual(workflow[saver]["inputs"]["format.codec"], "h264")
+
     def test_ui_workflow_links_are_internally_consistent(self):
         workflow_paths = sorted(WORKFLOW_DIR.glob("*.json"))
         self.assertTrue(workflow_paths, "No workflow JSON files found")
