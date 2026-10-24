@@ -1,0 +1,30 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FreeFuse × MiniMax H3 — 实验对照</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#11151b;color:#e5eaf0;font:16px/1.6 system-ui,sans-serif}main{max-width:1500px;padding:28px;margin:auto}h1{font-size:30px;margin:0}p{color:#b8c3ce}label,button,select{font:inherit}button,select{padding:8px 14px;background:#222d3b;color:#fff;border:1px solid #435269;border-radius:7px}button{cursor:pointer}button:hover{background:#31465c}.toolbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:20px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}article{background:#19212c;border:1px solid #2b3a4b;border-radius:12px;overflow:hidden}h2{font-size:19px;margin:12px 16px}video{display:block;width:100%;background:#000}small{color:#a9bacb}.muted{color:#93a7bd}.badge{display:inline-block;padding:3px 10px;border:1px solid #4b826f;color:#7ce3bc;border-radius:30px;font-size:13px}a{color:#8cc8ff}input[type=range]{width:300px}details{background:#19212c;padding:15px;margin:18px 0;border-radius:10px}.refs{max-width:950px}.refs video{max-height:470px}img{max-width:100%;display:block}.note{border-left:3px solid #7dd5b2;padding-left:14px}@media(max-width:700px){.grid{grid-template-columns:1fr}main{padding:16px}h1{font-size:24px}}
+</style><main>
+<span class="badge">研究原型 · 尚未发布为正式节点</span><h1>FreeFuse × MiniMax H3</h1>
+<p>同一提示词、随机种子、两套 LoRA 和采样设置，比较角色特征混合与区域约束后的变化。每段原始视频 768 × 768、124 帧、24 fps。</p>
+<div class="toolbar">
+<label>随机种子 <select id="seed"><option value="42">42 · 参数探索</option><option value="2026">2026 · 固定参数复验</option></select></label>
+<label>右侧方法 <select id="method"><option value="auto_combined">自动 FreeFuse · 区域 LoRA + 注意力</option><option value="auto_route">自动区域 · 只开区域 LoRA</option><option value="auto_bias">自动区域 · 只开注意力约束</option><option value="manual_combined">手工左右区域 · 诊断参考</option></select></label>
+<button id="play">同步播放</button><button id="reset">回到开头</button><label>时间 <input id="seek" type="range" min="0" max="5.125" step="0.0416666667" value="0"></label><span id="time">0.00 s</span>
+</div>
+<div class="grid"><article><h2>Without FreeFuse · 两套 LoRA 全局叠加</h2><video id="left" muted playsinline preload="metadata" controls></video></article><article><h2 id="rightTitle">Automatic FreeFuse</h2><video id="right" muted playsinline preload="metadata" controls></video></article></div>
+<p class="note" id="description">自动遮罩来自关闭 LoRA 的原生 H3 采集；手工左右遮罩单独标为诊断参考。构图也会随约束改变，请同时检查角色外观与动作。</p>
+<p><a id="pair" href="pilot_comparison.mp4">下载并排对照视频</a> · <a href="RESULTS.md">实验记录与复现参数</a> · <a href="ablations.jpg">各开关的中间帧对照</a></p>
+<details><summary>单角色参考：它们原本的外观</summary><p>参考分别只加载一套 LoRA，使用单人提示词。Starfire 使用 Teen Titans 角色/画风 LoRA，Albedo 使用专用角色 LoRA。</p><div class="grid refs"><article><h2>Starfire · 单 LoRA</h2><video src="../reference_starfire/video.mp4" muted controls playsinline preload="metadata"></video></article><article><h2>Albedo · 单 LoRA</h2><video src="../reference_albedo/video.mp4" muted controls playsinline preload="metadata"></video></article></div></details>
+<details><summary>自动区域与时序检查</summary><p>红色为 Starfire，绿色为 Albedo；叠加在关闭 LoRA 的区域采集视频上。这里展示实际使用的 37 × 24 × 24 遮罩，不是手工修正结果。</p><video src="automatic_mask_overlay.mp4" muted controls playsinline preload="metadata" style="max-width:768px"></video><p>各段时间位置：上排原生，下排自动 FreeFuse。</p><img src="pilot_timeline.jpg" alt="随机种子42的五个时间点"><img src="heldout_timeline.jpg" alt="随机种子2026的五个时间点"></details>
+<details><summary>实验边界</summary><p>目前测试同一组角色、静态机位、轻微挥手和两个随机种子。种子42用于检查60组区域参数，种子2026固定使用选定参数。未验证复杂运动、遮挡、镜头切换或其他 LoRA 组合，也没有角色相似度的定量基准。音频未评估，比较默认静音；原始 MP4 保留 H3 生成的音频。</p><p>H3 完整 BF16 权重，CFG 1，res_multistep / simple，20 步。区域 LoRA 与注意力约束作用在原生50个视频/音频联合 DiT 块的视频 token 上。</p></details>
+</main><script>
+const $=id=>document.getElementById(id),l=$('left'),r=$('right');let syncing=false;
+const titles={auto_combined:'Automatic FreeFuse · 区域 LoRA + 注意力',auto_route:'自动区域 · 只开区域 LoRA',auto_bias:'自动区域 · 只开注意力约束',manual_combined:'手工左右区域 · 诊断参考'};
+function pause(){l.pause();r.pause();$('play').textContent='同步播放'}
+function change(){pause();const held=$('seed').value==='2026';for(const o of $('method').options)o.disabled=held&&o.value!=='auto_combined';if(held)$('method').value='auto_combined';
+l.src='../'+(held?'holdout_native_global':'native_global')+'/video.mp4';r.src='../'+(held?'holdout_auto_combined':$('method').value)+'/video.mp4';$('rightTitle').textContent=titles[$('method').value];$('seek').value=0;$('time').textContent='0.00 s';$('pair').href=(held?'heldout':'pilot')+'_comparison.mp4';
+$('description').textContent=$('method').value==='manual_combined'?'此项使用手工左右遮罩，仅用于判断区域约束能否生效，不属于自动区域结果。':'此项使用原生 H3 特征生成的自动遮罩；构图也会改变，请同时检查角色外观与动作。'}
+$('seed').onchange=change;$('method').onchange=change;
+$('play').onclick=async()=>{if(!l.paused){pause();return}r.currentTime=l.currentTime;await Promise.all([l.play(),r.play()]);$('play').textContent='暂停'};
+$('reset').onclick=()=>{pause();l.currentTime=r.currentTime=0};
+$('seek').oninput=()=>{pause();l.currentTime=r.currentTime=+$('seek').value;$('time').textContent=(+l.currentTime).toFixed(2)+' s'};
+l.addEventListener('timeupdate',()=>{if(!l.paused&&Math.abs(l.currentTime-r.currentTime)>.12)r.currentTime=l.currentTime;$('seek').value=l.currentTime;$('time').textContent=l.currentTime.toFixed(2)+' s'});
+for(const v of [l,r])v.addEventListener('ended',pause);change();
+</script></html>

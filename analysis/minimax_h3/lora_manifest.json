@@ -1,0 +1,40 @@
+[
+  {
+    "adapter": "albedo",
+    "model_id": 2809374,
+    "version_id": 3343083,
+    "creator": "CitronLegacy",
+    "name": "AlbedoOverlordEng_H3_v1.safetensors",
+    "size": 279622904,
+    "sha256": "d9e0aec252e9b9b70a053031405d6115121a7bbae94cb8e4bc1457b274277bf5",
+    "triggers": [
+      "lbd0c1tr0n, a demon woman with yellow eyes, slit pupils, long black hair and white horns,",
+      "lbd0c1tr0n, a demon woman with yellow eyes, slit pupils, long black hair and white horns,   She has black wings, bare shoulders, and is wearing a white dress and white gloves"
+    ]
+  },
+  {
+    "adapter": "starfire",
+    "model_id": 2971649,
+    "version_id": 3367577,
+    "creator": "tazmannner379",
+    "name": "TEENTITANS_H3_V1C-step00001500.safetensors",
+    "size": 298263824,
+    "sha256": "368feb5b250d505ebe5c6ab6e7297faf6ef5ef5c204e168a1791ec81e331f67e",
+    "triggers": [
+      "Teen Titans (2003) style, 2d animation"
+    ]
+  },
+  {
+    "adapter": "chel",
+    "model_id": 45917,
+    "version_id": 3385523,
+    "creator": "Geno",
+    "name": "Chel___Road_to_El_Dorado__minimaxh3_3384693_epoch_10.safetensors",
+    "size": 310170072,
+    "sha256": "aa09c76d07201e53c36f16db3d464a56975b369309687f8e004b1fca19552882",
+    "triggers": [
+      "ChelR",
+      "dark-skinned female with Long black hair with blunt bangs, brown eyes, golden earrings, pink and white bandeau top with s red line in it, and a white wrap skirt."
+    ]
+  }
+]

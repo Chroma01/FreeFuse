@@ -1,0 +1,46 @@
+[
+  {
+    "rfilename": "diffusion_models/minimax_h3_fl2va_bf16.safetensors",
+    "blobId": "d09c38a854fe071c3261b0baf139c2829e81dbeb",
+    "size": 66280487368,
+    "lfs": {
+      "sha256": "907d4add438438ec1544f5240c3b38532ed934fe6be75677a6bbda2a6fdd6182",
+      "size": 66280487368,
+      "pointerSize": 136
+    },
+    "revision": "e5eb578a89295337b8ff433a035929ce0279e0b6"
+  },
+  {
+    "rfilename": "text_encoders/qwen3vl_32b_minimax_h3_bf16.safetensors",
+    "blobId": "6853d92901ec875951cc1c386dc0fe038a796f4d",
+    "size": 51506295256,
+    "lfs": {
+      "sha256": "600d567f6a9629c8574e8e7041b199bdd9c59a986afa7906910a81919610607d",
+      "size": 51506295256,
+      "pointerSize": 136
+    },
+    "revision": "e5eb578a89295337b8ff433a035929ce0279e0b6"
+  },
+  {
+    "rfilename": "vae/minimax_h3_audio_vae_fp32.safetensors",
+    "blobId": "90bf58595930e7d56cbe9fecb4ea647d5c0e3aec",
+    "size": 605254808,
+    "lfs": {
+      "sha256": "8e505d95dd1561d47abd43d4238fd40d9bb1ae9e147ed0a4cba778d76ae4db48",
+      "size": 605254808,
+      "pointerSize": 134
+    },
+    "revision": "e5eb578a89295337b8ff433a035929ce0279e0b6"
+  },
+  {
+    "rfilename": "vae/minimax_h3_video_vae_fp16.safetensors",
+    "blobId": "56a63ef27e68f3b6d5cd4c704f51f291e40f3e11",
+    "size": 5207808496,
+    "lfs": {
+      "sha256": "7c1f131492e7eddacaac9069a61b81bdd39de5cc96561e677c5eab1cdce5e522",
+      "size": 5207808496,
+      "pointerSize": 135
+    },
+    "revision": "e5eb578a89295337b8ff433a035929ce0279e0b6"
+  }
+]
