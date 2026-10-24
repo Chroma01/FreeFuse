@@ -18,4 +18,3 @@ result,settings=sample(model,conditioning,args.width,args.height,args.length,arg
 target=BASE/"validation"/args.out
 save_latents(result,target)
 decode_and_save(result,target,{**prompt_meta,**settings,"loras":names,"freefuse":False})
-

@@ -11,4 +11,3 @@ target=BASE/"validation/masks"/f"seed{a.seed}_s3_b20_t100000";target.mkdir(paren
 torch.save(masks,target/"masks.pt")
 (target/"selection.json").write_text(json.dumps({"pilot_seed":42,"step":3,"block":20,"temperature":100000,"temporal_window":3,"heldout_seed":a.seed},indent=2))
 print("FIXED_MASK_READY",target,flush=True)
-

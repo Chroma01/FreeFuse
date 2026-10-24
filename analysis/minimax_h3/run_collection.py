@@ -28,4 +28,3 @@ for (step,block),capture in sorted(state.captures.items()):
 print("COLLECTION_COMPLETE",len(state.captures),flush=True)
 decode_and_save(result,target,{**meta,**settings,"freefuse_phase":"LoRA-disabled region collection",
                               "collection_blocks":list(state.blocks),"collection_steps":list(state.steps)})
-

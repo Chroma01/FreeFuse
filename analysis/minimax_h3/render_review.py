@@ -60,4 +60,3 @@ for i,n in enumerate(names):
         d.text((384*i+6,6),n,font=small,fill="white")
 sheet.save(OUT/"ablations.jpg",quality=94)
 print("REVIEW_MEDIA_COMPLETE",flush=True)
-

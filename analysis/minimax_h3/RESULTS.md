@@ -80,4 +80,3 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 ../run-python -m pytest -q analysis/minimax_h3/
 ```
 
 官方参考：[MiniMax H3](https://github.com/MiniMax-AI/MiniMax-H3)、[ComfyUI 原生教程](https://docs.comfy.org/tutorials/video/minimax/minimax-h3)、[官方 Comfy 权重](https://huggingface.co/Comfy-Org/MiniMax-H3)。LoRA 版本与作者见公开清单。
-

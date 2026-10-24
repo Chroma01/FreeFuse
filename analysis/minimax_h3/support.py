@@ -245,4 +245,3 @@ def patch_model(model, collection=None,masks=None,positions=None,route=False,bia
     for index in indices:
         clone.set_model_patch_replace(block,"dit","double_block",index)
     return clone
-

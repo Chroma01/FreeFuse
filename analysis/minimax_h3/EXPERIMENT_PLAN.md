@@ -41,4 +41,3 @@ Evidence saved with every run: code/model revisions and weight hashes, exact
 prompt and concept spans, seeds, latent geometry, sampling/collection/routing
 parameters, LoRA target counts, wall time, raw maps/masks and generated video.
 Report pilot evidence as qualitative feasibility, not a general benchmark.
-

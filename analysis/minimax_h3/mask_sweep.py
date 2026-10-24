@@ -35,4 +35,3 @@ sheet=Image.new("RGB",(4*432,((len(thumbs)+3)//4)*170),"#17191d")
 for i,thumb in enumerate(thumbs):sheet.paste(thumb,((i%4)*432,(i//4)*170))
 sheet.save(out/"contact.png")
 print("MASKS_COMPLETE",len(thumbs),flush=True)
-

@@ -146,4 +146,3 @@ def decode_and_save(result,target,metadata):
 def save_latents(result,target):
     Path(target).mkdir(parents=True,exist_ok=True)
     torch.save({"video":result.unbind()[0].cpu(),"audio":result.unbind()[1].cpu()},Path(target)/"latents.pt")
-

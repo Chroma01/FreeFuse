@@ -25,4 +25,3 @@ target=BASE/"validation"/args.out
 save_latents(result,target)
 decode_and_save(result,target,{**meta,**settings,"loras":["starfire","albedo"],
     "freefuse_mode":args.mode,"mask_source":mask_source,"bias_negative":4,"bias_positive":2})
-

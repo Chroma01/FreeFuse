@@ -31,4 +31,3 @@ class Handler(SimpleHTTPRequestHandler):
             if not chunk:break
             output.write(chunk);left-=len(chunk)
 ThreadingHTTPServer(("127.0.0.1",17874),Handler).serve_forever()
-

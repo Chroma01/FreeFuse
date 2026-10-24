@@ -137,4 +137,3 @@ def test_layout_tracks_reference_and_audio_rows_separately():
     assert text==(0,7) and grid==(2,2,3)
     assert any(kind=="cond" for _,_,kind in layout.segments)
     assert video[1]==layout.seq_len and video[1]-video[0]==12
-

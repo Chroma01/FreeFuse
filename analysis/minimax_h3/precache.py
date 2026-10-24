@@ -19,4 +19,3 @@ for names in [["starfire"],["albedo"],["chel"],["chel","albedo"]]:
        "positions":positions,"text_shape":list(conditioning[0][0].shape)}
  torch.save(conditioning,target);target.with_suffix(".json").write_text(json.dumps(data,indent=2))
  print("CONDITIONING_READY",names,data["text_shape"],flush=True)
-
