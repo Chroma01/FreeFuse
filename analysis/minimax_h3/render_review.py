@@ -6,6 +6,8 @@ from PIL import Image,ImageDraw,ImageFont
 BASE=Path(__file__).resolve().parents[3];VAL=BASE/"validation"
 OUT=VAL/"review";OUT.mkdir(exist_ok=True)
 shutil.copyfile(Path(__file__).with_name("review.html"),OUT/"index.html")
+for source in VAL.glob("*/frame_0000.png"):
+    Image.open(source).convert("RGB").save(source.with_name("poster.jpg"),quality=88)
 font=ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",24)
 small=ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",18)
 def frames(name):

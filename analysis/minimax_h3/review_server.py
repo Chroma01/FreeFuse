@@ -1,7 +1,7 @@
 """Loopback-only review server with byte-range video delivery."""
 from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from pathlib import Path
-import re,shutil
+import argparse,re,shutil
 ROOT=Path(__file__).resolve().parents[3]/"validation"
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self,*a,**k):super().__init__(*a,directory=str(ROOT),**k)
@@ -22,7 +22,9 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length",str(self.remaining));self.send_header("Content-Range",f"bytes {start}-{end}/{size}")
         self.end_headers();return f
     def end_headers(self):
-        self.send_header("Accept-Ranges","bytes");super().end_headers()
+        self.send_header("Accept-Ranges","bytes")
+        self.send_header("Cache-Control","no-cache")
+        super().end_headers()
     def copyfile(self,source,output):
         if self.remaining is None:return shutil.copyfileobj(source,output)
         left=self.remaining
@@ -30,4 +32,11 @@ class Handler(SimpleHTTPRequestHandler):
             chunk=source.read(min(left,262144))
             if not chunk:break
             output.write(chunk);left-=len(chunk)
-ThreadingHTTPServer(("127.0.0.1",17874),Handler).serve_forever()
+if __name__ == "__main__":
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root",type=Path,default=ROOT)
+    parser.add_argument("--port",type=int,default=17874)
+    args=parser.parse_args()
+    ROOT=args.root.resolve()
+    if not ROOT.is_dir():parser.error(f"Review directory does not exist: {ROOT}")
+    ThreadingHTTPServer(("127.0.0.1",args.port),Handler).serve_forever()

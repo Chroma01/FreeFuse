@@ -54,6 +54,8 @@ H3 的 9 项检查全部通过（h3-tests-final.log）。原生小模型的采�
 
 ## 复现入口
 
+查看结果时，页面与原始视频可缓存到本机后运行 `python3 analysis/minimax_h3/review_server.py --root outputs/h3_validation --port 18774`，避免长时间打开页面后 SSH 连接断开导致黑屏。远端服务仍可使用；需要转发时，`forward_review.py user@host --ssh-port PORT` 提供连接保活与断线重连。
+
 这是原生 ComfyUI Python 实验入口，尚未注册用户节点。将 ComfyUI 与 FreeFuse 放在同一任务目录，模型放在 models/{diffusion_models,text_encoders,vae,loras}，把源码中的公开 manifest 复制到任务的 reference/。使用任务专用环境，安装 ComfyUI requirements、av、pytest，并提供 run-python 启动器指向该环境。
 
 在 FreeFuse 根目录执行，GPU 编号按实际空闲资源设置：
