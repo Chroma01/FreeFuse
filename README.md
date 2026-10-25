@@ -51,16 +51,6 @@ This paper proposes **FreeFuse**, a training-free framework for multi-subject te
   <em>Additional comparisons demonstrating FreeFuse's effectiveness on SDXL.</em>
 </p>
 
-### Results on MiniMax H3 video (ComfyUI)
-
-<p align="center">
-  <img src="assets/minimax_h3_compare.jpg" alt="MiniMax H3: global LoRAs and automatic FreeFuse, middle video frame" width="100%">
-</p>
-
-Middle frame from the native ComfyUI workflow: global LoRAs on the left,
-automatic FreeFuse on the right. The example generates 768 × 768 videos with
-124 frames and native audio. See the [H3 workflow, model setup and validated scope](docs/minimax_h3.md).
-
 ## 🏗️ Architecture
 
 <p align="center">
@@ -153,6 +143,8 @@ Thanks for [Tekemo](https://civarchive.com/users/Tekemo) and [jrewingwannabe947]
 
 Thanks to [gpl1967](https://github.com/gpl1967) and [merermero](https://github.com/merermero) for the Krea2 support request and discussion in [issue #26](https://github.com/yaoliliu/FreeFuse/issues/26).
 
+## More model comparisons
+
 Single-LoRA character references are shown at the left of each row. See [reference generation settings](docs/character_references.md).
 
 <p align="center">
@@ -163,3 +155,10 @@ Single-LoRA character references are shown at the left of each row. See [referen
   <em>FreeFuse solves feature conflicts between multiple subject LoRAs without additional training in flux1.dev, sdxl, z-image and more.</em>
 </p>
 
+### Results on MiniMax H3 video (ComfyUI)
+
+https://github.com/user-attachments/assets/401615de-1685-4e76-8975-03529ce28443
+
+Global LoRAs on the left; automatic FreeFuse on the right, with the same prompt,
+seed and sampling settings. This preview is silent; the native workflow generates
+768 × 768 videos with 124 frames and audio. See the [H3 workflow and model setup](docs/minimax_h3.md).
