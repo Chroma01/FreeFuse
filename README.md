@@ -157,6 +157,12 @@ Single-LoRA character references are shown at the left of each row. See [referen
 
 ### Results on MiniMax H3 video (ComfyUI)
 
+Single-LoRA references, generated separately with single-character prompts (seed 42):
+
+| Starfire · Teen Titans LoRA only | Albedo · Albedo LoRA only |
+|:---:|:---:|
+| ![Starfire single-LoRA reference](assets/minimax_h3_starfire_reference.png) | ![Albedo single-LoRA reference](assets/minimax_h3_albedo_reference.png) |
+
 https://github.com/user-attachments/assets/401615de-1685-4e76-8975-03529ce28443
 
 Global LoRAs on the left; automatic FreeFuse on the right, with the same prompt,
