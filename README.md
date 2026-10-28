@@ -9,6 +9,7 @@ FreeFuse for ComfyUI: multi-concept LoRA composition with spatial awareness.
 - [workflows/flux2_klein_9b_freefuse_complete.json](workflows/flux2_klein_9b_freefuse_complete.json)
 - [workflows/sdxl_freefuse_complete.json](workflows/sdxl_freefuse_complete.json)
 - [workflows/zimage_freefuse_complete.json](workflows/zimage_freefuse_complete.json)
+- [workflows/krea2_freefuse_depth_autoprompt_api.json](workflows/krea2_freefuse_depth_autoprompt_api.json) — community workflow: Krea2 AutoPrompt chain + depth-control branch ([docs](../docs/krea2_depth_autoprompt.md))
 
 ## Installation
 
