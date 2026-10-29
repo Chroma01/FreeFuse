@@ -187,5 +187,52 @@ class Krea2WorkflowTests(unittest.TestCase):
         self.assertEqual(phase2_values[2], phase1_values[1])
 
 
+class Krea2CommunityWorkflowTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        path = PLUGIN_ROOT / "workflows" / "krea2_freefuse_depth_autoprompt_api.json"
+        cls.graph = json.loads(path.read_text())
+
+    def resolve(self, value):
+        if not isinstance(value, list):
+            return value
+        node = self.graph[value[0]]
+        inputs = node["inputs"]
+        if node["class_type"] == "StringConcatenate":
+            return (self.resolve(inputs["string_a"]) + inputs["delimiter"]
+                    + self.resolve(inputs["string_b"]))
+        return inputs["value"]
+
+    def test_subjects_and_background_are_shared_and_appear_once(self):
+        graph = self.graph
+        self.assertEqual(graph["5"]["inputs"]["prompt"], graph["6"]["inputs"]["text"])
+        prompt = self.resolve(graph["6"]["inputs"]["text"])
+        concepts = graph["3"]["inputs"]
+        for index in range(1, 5):
+            self.assertEqual(prompt.count(self.resolve(concepts[f"concept_text_{index}"])), 1)
+        self.assertEqual(concepts["background_text"], ["107", 0])
+        self.assertEqual(prompt.count(self.resolve(concepts["background_text"])), 1)
+        self.assertEqual(prompt.count("four clearly separated characters"), 1)
+        self.assertNotIn("three clearly separated characters", prompt)
+
+    def test_defaults_route_all_characters_and_share_sampling_settings(self):
+        graph = self.graph
+        for node_id in ("2", "37", "38", "22"):
+            node = graph[node_id]
+            self.assertEqual(node["class_type"], "FreeFuseLoRALoader")
+            self.assertGreater(node["inputs"]["strength_model"], 0)
+            self.assertNotIn("\\", node["inputs"]["lora_name"])
+        for key in ("seed", "steps", "sampler_name", "scheduler", "cfg"):
+            self.assertEqual(graph["9"]["inputs"][key], graph["13"]["inputs"][key])
+        self.assertEqual(self.resolve(graph["9"]["inputs"]["steps"]), 8)
+        self.assertLessEqual(graph["9"]["inputs"]["collect_step"], 8)
+        for key in ("lora_1", "lora_2", "lora_3"):
+            self.assertFalse(graph["153"]["inputs"][key]["on"])
+        self.assertTrue(all(not value for key, value in graph["23"]["inputs"].items()
+                            if key.startswith("mask_image_")))
+        reference = graph["30"]["inputs"]["image"]
+        self.assertTrue((PLUGIN_ROOT.parent / "assets" / reference).is_file())
+
+
 if __name__ == "__main__":
     unittest.main()
