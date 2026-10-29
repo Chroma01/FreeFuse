@@ -1,0 +1,861 @@
+{
+  "1": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load Krea2 VAE",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "2": {
+    "inputs": {
+      "lora_name": "Alyssa Krea2.safetensors",
+      "adapter_name": "Character 1",
+      "strength_model": 0.85,
+      "strength_clip": 0.0,
+      "model": [
+        "153",
+        0
+      ],
+      "clip": [
+        "153",
+        1
+      ]
+    },
+    "class_type": "FreeFuseLoRALoader",
+    "_meta": {
+      "title": "LoRA 1: Character 1",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "3": {
+    "inputs": {
+      "adapter_name_1": "Character 1",
+      "concept_text_1": [
+        "105",
+        0
+      ],
+      "adapter_name_2": "Character 2",
+      "concept_text_2": [
+        "106",
+        0
+      ],
+      "adapter_name_3": "Character 3",
+      "concept_text_3": [
+        "108",
+        0
+      ],
+      "adapter_name_4": "Character 4",
+      "concept_text_4": [
+        "109",
+        0
+      ],
+      "enable_background": true,
+      "background_text": [
+        "107",
+        0
+      ],
+      "freefuse_data": [
+        "22",
+        2
+      ]
+    },
+    "class_type": "FreeFuseConceptMap",
+    "_meta": {
+      "title": "Concept Mapping",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "4": {
+    "inputs": {
+      "shift": 3,
+      "sampling": "flow",
+      "model": [
+        "22",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "Model Sampling Patch (AuraFlow)",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "5": {
+    "inputs": {
+      "prompt": [
+        "116",
+        0
+      ],
+      "filter_meaningless": true,
+      "filter_single_char": true,
+      "clip": [
+        "22",
+        1
+      ],
+      "freefuse_data": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "FreeFuseTokenPositions",
+    "_meta": {
+      "title": "Compute Token Positions",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "6": {
+    "inputs": {
+      "text": [
+        "116",
+        0
+      ],
+      "clip": [
+        "22",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive Conditioning",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "7": {
+    "inputs": {
+      "width": 1536,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "Latent Image Size",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "8": {
+    "inputs": {
+      "text": "low quality, blurry, merged characters, duplicate face, wrong costume, extra limbs, deformed hands",
+      "clip": [
+        "22",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative Conditioning",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "9": {
+    "inputs": {
+      "seed": [
+        "156",
+        0
+      ],
+      "steps": [
+        "157",
+        0
+      ],
+      "collect_step": 3,
+      "cfg": 1,
+      "sampler_name": "er_sde",
+      "scheduler": "simple",
+      "collect_block": 10,
+      "collect_block_end": 10,
+      "collect_region": "output_early ★ (recommended)",
+      "collect_tf_index": 3,
+      "temperature": 0,
+      "top_k_ratio": 0.1,
+      "disable_lora_phase1": true,
+      "bg_scale": 0.95,
+      "use_morphological_cleaning": true,
+      "balance_iterations": 15,
+      "balance_lr": 0.01,
+      "gravity_weight": 4e-05,
+      "spatial_weight": 4e-05,
+      "momentum": 0.2,
+      "centroid_margin": 0,
+      "border_penalty": 0,
+      "anisotropy": 1.3,
+      "h3_temporal_window": 3,
+      "model": [
+        "34",
+        0
+      ],
+      "conditioning": [
+        "6",
+        0
+      ],
+      "neg_conditioning": [
+        "8",
+        0
+      ],
+      "latent": [
+        "7",
+        0
+      ],
+      "freefuse_data": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "FreeFusePhase1Sampler",
+    "_meta": {
+      "title": "Phase 1: Collect Masks",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "10": {
+    "inputs": {
+      "images": [
+        "9",
+        2
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Phase 1 Mask Preview",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "11": {
+    "inputs": {
+      "enable_token_masking": true,
+      "enable_attention_bias": true,
+      "bias_scale": 4,
+      "positive_bias_scale": 2,
+      "bidirectional": true,
+      "use_positive_bias": true,
+      "bias_blocks": "all",
+      "model": [
+        "9",
+        0
+      ],
+      "masks": [
+        "24",
+        0
+      ],
+      "freefuse_data": [
+        "5",
+        0
+      ],
+      "latent": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "FreeFuseMaskApplicator",
+    "_meta": {
+      "title": "Phase 2: Apply Masks",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "12": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "show_labels": true,
+      "show_coverage": true,
+      "masks": [
+        "9",
+        1
+      ]
+    },
+    "class_type": "FreeFuseMaskPreview",
+    "_meta": {
+      "title": "Detailed Mask Preview",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "13": {
+    "inputs": {
+      "seed": [
+        "156",
+        0
+      ],
+      "steps": [
+        "157",
+        0
+      ],
+      "cfg": 1,
+      "sampler_name": "er_sde",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "latent_image": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "Phase 2: Full Generation",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "14": {
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "vae": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "15": {
+    "inputs": {
+      "filename_prefix": "FreeFuse/Krea2_Depth_AutoPrompt",
+      "images": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Final Output",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "17": {
+    "inputs": {
+      "string_a": [
+        "105",
+        0
+      ],
+      "string_b": [
+        "106",
+        0
+      ],
+      "delimiter": ". "
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "Haupt-Prompt (auto)",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "18": {
+    "inputs": {
+      "images": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Combined Masks",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "19": {
+    "inputs": {
+      "images": [
+        "12",
+        1
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Individual Masks",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "22": {
+    "inputs": {
+      "lora_name": "Krea2_JanieshaWiggins_000002500.safetensors",
+      "adapter_name": "Character 4",
+      "strength_model": 0.85,
+      "strength_clip": 0.0,
+      "model": [
+        "38",
+        0
+      ],
+      "clip": [
+        "38",
+        1
+      ],
+      "freefuse_data": [
+        "38",
+        2
+      ]
+    },
+    "class_type": "FreeFuseLoRALoader",
+    "_meta": {
+      "title": "LoRA 4: Character 4",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "23": {
+    "inputs": {
+      "mask_image_00": "",
+      "mask_image_01": "",
+      "mask_image_02": "",
+      "mask_image_03": "",
+      "mask_image_04": "",
+      "mask_image_05": "",
+      "mask_image_06": "",
+      "mask_image_07": "",
+      "mask_image_08": "",
+      "mask_image_09": "",
+      "mask_bank": [
+        "9",
+        1
+      ],
+      "freefuse_data": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "FreeFuseMaskTap",
+    "_meta": {
+      "title": "Mask Tap (Optional Edit Branch)",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "24": {
+    "inputs": {
+      "slot_names": [
+        "23",
+        1
+      ],
+      "clamp_01": true,
+      "original_mask_bank": [
+        "23",
+        0
+      ],
+      "freefuse_data": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "FreeFuseMaskReassemble",
+    "_meta": {
+      "title": "Mask Reassemble",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "26": {
+    "inputs": {
+      "images": [
+        "23",
+        2
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "27": {
+    "inputs": {
+      "unet_name": "krea2_turbo_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "28": {
+    "inputs": {
+      "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "30": {
+    "inputs": {
+      "image": "krea2_depth_autoprompt_result.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "30 ControlNet Referenzbild",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "31": {
+    "inputs": {
+      "ckpt_name": "depth_anything_v2_vitl.pth",
+      "resolution": 1024,
+      "image": [
+        "30",
+        0
+      ]
+    },
+    "class_type": "DepthAnythingV2Preprocessor",
+    "_meta": {
+      "title": "31 Depth-Map erzeugen",
+      "cnr_id": "comfyui_controlnet_aux",
+      "ver": "59b1fc411ede8623b2997855b8018f0b3b6cf49f"
+    }
+  },
+  "32": {
+    "inputs": {
+      "resize": "match_latent_size",
+      "upscale_method": "lanczos",
+      "crop": "center",
+      "channel_mode": "grayscale",
+      "normalize": "per_image_minmax",
+      "invert": false,
+      "batch_mode": "independent_images",
+      "control_image": [
+        "31",
+        0
+      ],
+      "vae": [
+        "1",
+        0
+      ],
+      "latent": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "Krea2ControlImageEncode",
+    "_meta": {
+      "title": "32 Krea2 Control Image Encode",
+      "cnr_id": "comfyui-workflow-encrypt",
+      "aux_id": "facok/comfyui-krea2-controlnet",
+      "ver": "79ebfd3bd80d2180b334dd7ce57f3c9ddaa0848f"
+    }
+  },
+  "33": {
+    "inputs": {
+      "lora_name": "depth-control-lora.safetensors",
+      "strength": 1,
+      "model": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "Krea2ControlLoRALoader",
+    "_meta": {
+      "title": "33 Krea2 Control LoRA Loader (Depth)",
+      "cnr_id": "comfyui-workflow-encrypt",
+      "aux_id": "facok/comfyui-krea2-controlnet",
+      "ver": "79ebfd3bd80d2180b334dd7ce57f3c9ddaa0848f"
+    }
+  },
+  "34": {
+    "inputs": {
+      "model": [
+        "33",
+        0
+      ],
+      "control_latent": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "Krea2ControlApply",
+    "_meta": {
+      "title": "34 Krea2 Control Apply",
+      "cnr_id": "comfyui-workflow-encrypt",
+      "aux_id": "facok/comfyui-krea2-controlnet",
+      "ver": "79ebfd3bd80d2180b334dd7ce57f3c9ddaa0848f"
+    }
+  },
+  "35": {
+    "inputs": {
+      "images": [
+        "31",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "35 Vorschau Depth-Map",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "37": {
+    "inputs": {
+      "lora_name": "archer_queen_krea2.safetensors",
+      "adapter_name": "Character 2",
+      "strength_model": 0.85,
+      "strength_clip": 0.0,
+      "model": [
+        "2",
+        0
+      ],
+      "clip": [
+        "2",
+        1
+      ],
+      "freefuse_data": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "FreeFuseLoRALoader",
+    "_meta": {
+      "title": "LoRA 2: Character 2",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "38": {
+    "inputs": {
+      "lora_name": "satoru_gojo_krea2.safetensors",
+      "adapter_name": "Character 3",
+      "strength_model": 0.85,
+      "strength_clip": 0.0,
+      "model": [
+        "37",
+        0
+      ],
+      "clip": [
+        "37",
+        1
+      ],
+      "freefuse_data": [
+        "37",
+        2
+      ]
+    },
+    "class_type": "FreeFuseLoRALoader",
+    "_meta": {
+      "title": "LoRA 3: Character 3",
+      "cnr_id": "freefuse",
+      "ver": "1.0.14"
+    }
+  },
+  "103": {
+    "inputs": {
+      "string_a": [
+        "107",
+        0
+      ],
+      "string_b": "Full body, four clearly separated characters, clean composition, no merged faces, no costume swapping.",
+      "delimiter": ". "
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "+ Komposition",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "105": {
+    "inputs": {
+      "value": "realistic photo of Alyssa, a 30 year old woman, wearing a blue cat-suit and white Nike sneakers, she has short blonde hair styled to an updo and is smiling. she is flexing muscles with her right arm and the other is on her hips"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Character 1",
+      "cnr_id": "comfy-core",
+      "ver": "0.37.0"
+    }
+  },
+  "106": {
+    "inputs": {
+      "value": "comic, anima style: archer_queen, an anime girl with, brown eyes, long black hair and thin blowing strands standing in the center with a bored expression, she is wearing a black tuxedo, hands in pockets"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Character 2",
+      "cnr_id": "comfy-core",
+      "ver": "0.37.0"
+    }
+  },
+  "107": {
+    "inputs": {
+      "value": "a cinematic outdoor scene on a New York street at night with warm lights in the background"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Background",
+      "cnr_id": "comfy-core",
+      "ver": "0.37.0"
+    }
+  },
+  "108": {
+    "inputs": {
+      "value": "on the far left stands satoru_gojo, a man looking at the viewer with a grin on his face. He is wearing a green track-suite, comic anime."
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Character 3",
+      "cnr_id": "comfy-core",
+      "ver": "0.37.0"
+    }
+  },
+  "109": {
+    "inputs": {
+      "value": "on the far right stands JanieshaWiggins, a woman with blonde hair, wearing sunglasses and a red bodysuit, long black leather-boots, pointing at the viewer with one finger. Her exprssion is neutral and her mouth closed. realistic photo"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "Character 4",
+      "cnr_id": "comfy-core",
+      "ver": "0.37.0"
+    }
+  },
+  "114": {
+    "inputs": {
+      "string_a": [
+        "108",
+        0
+      ],
+      "string_b": [
+        "109",
+        0
+      ],
+      "delimiter": ". "
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "+ Charakter 3",
+      "cnr_id": "comfy-core",
+      "ver": "0.36.0"
+    }
+  },
+  "115": {
+    "inputs": {
+      "string_a": [
+        "17",
+        0
+      ],
+      "string_b": [
+        "114",
+        0
+      ],
+      "delimiter": ". "
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "Concatenate Text",
+      "cnr_id": "comfy-core",
+      "ver": "0.37.0"
+    }
+  },
+  "116": {
+    "inputs": {
+      "string_a": [
+        "115",
+        0
+      ],
+      "string_b": [
+        "103",
+        0
+      ],
+      "delimiter": ". "
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "Final Prompt (alle 4)",
+      "cnr_id": "comfy-core",
+      "ver": "0.37.0"
+    }
+  },
+  "153": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": false,
+        "lora": "detail_slider_krea2_loraholic.safetensors",
+        "strength": 4
+      },
+      "lora_2": {
+        "on": false,
+        "lora": "zy_Cinematic_Shot_K2.safetensors",
+        "strength": 1
+      },
+      "lora_3": {
+        "on": false,
+        "lora": "krea2_identity_edit_v1_2.safetensors",
+        "strength": 1
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "27",
+        0
+      ],
+      "clip": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "Power Lora Loader (rgthree)",
+      "cnr_id": "rgthree-comfy",
+      "ver": "449c58fcdd612f7733e54c51f6758ead63fa180b"
+    }
+  },
+  "156": {
+    "class_type": "PrimitiveInt",
+    "inputs": {
+      "value": 43206399027079
+    },
+    "_meta": {
+      "title": "Shared sampling seed"
+    }
+  },
+  "157": {
+    "class_type": "PrimitiveInt",
+    "inputs": {
+      "value": 8
+    },
+    "_meta": {
+      "title": "Shared sampling steps"
+    }
+  }
+}

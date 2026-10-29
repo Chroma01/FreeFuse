@@ -143,6 +143,8 @@ Thanks for [Tekemo](https://civarchive.com/users/Tekemo) and [jrewingwannabe947]
 
 Thanks to [gpl1967](https://github.com/gpl1967) and [merermero](https://github.com/merermero) for the Krea2 support request and discussion in [issue #26](https://github.com/yaoliliu/FreeFuse/issues/26).
 
+Thanks to [Rudolf (GPL1967)](https://github.com/GPL1967) and Agent Cow (monomatic, Hamburg) for contributing the [Krea2 AutoPrompt and depth-control workflow](docs/krea2_depth_autoprompt.md) in [PR #32](https://github.com/yaoliliu/FreeFuse/pull/32).
+
 ## More model comparisons
 
 Single-LoRA character references are shown at the left of each row. See [reference generation settings](docs/character_references.md).
